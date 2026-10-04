@@ -4,15 +4,16 @@
 
 | 檢查 | 狀態 | 範圍 |
 |---|---|---|
-| 原CLI測試77項 | blocked | 9項通過，68項因執行環境禁止本機socket綁定而無法完成；不是整套通過 |
+| CLI測試80項 | passed | 80 項全數通過（需要本機 socket）；依獨立審查回報，含原77項與新增3項 |
 | 通用設定測試 | passed | 3項：loopback不自啟、OLLAMA_URL與JEV_ENDPOINTS優先序、範例digest釘選 |
-| 檔案read-back與離線完整性 | passed | eval/verify_release.py：73個非空檔案，語法／JSON／連結；2587有效題與200個N27拒絕；數字錨點 |
+| 檔案read-back與離線完整性 | passed | eval/verify_release.py：74個非空檔案，語法／JSON／連結；2587有效題與200個N27拒絕；數字錨點 |
 | 隱私與祕密掃描 | passed | 逐項grep：個人IP／路徑／主機帳號／email／祕密／占位皆0；gitleaks dir輸出no leaks found；掃描公開工作樹，git身分metadata依指定另保留 |
 | 素材唯讀 | passed | 405個素材檔SHA-256比對無變更；記錄在公開repo外 |
 | 獨立唯讀審查 | passed | 獨立審查檔案、數字、授權、個人資訊與腳本；指揮者抽查數字與命令；移除合成題家目錄前綴 |
 
 原套件完整保留所有77項測試與斷言，只通用化主機名、測試環境隔離變數；新增3項不連線的通用設定測試。
-要在允許loopback socket的環境驗整套，執行README中的unittest命令。未刪除、跳過或放寬受阻測試。
+要在允許loopback socket的環境驗整套，執行README中的unittest命令。未刪除、跳過或放寬測試。
+本次修正文案時於受限沙箱重跑80項：12項通過、68項因禁止本機socket綁定而受阻；這次重跑狀態為blocked，與上表所記的獨立審查回報分開。
 
 目前可完整重現的資料範圍為已收錄MASSIVE與合成題；RSS只可重抓當前快照，其他未收語料不能完整歷史重播。
 JevBench README已讀；CONTRIBUTING路徑無法取得，尚不能確認接受規則或格式；上游草稿保留此限制。

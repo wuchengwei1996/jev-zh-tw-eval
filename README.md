@@ -28,6 +28,8 @@ Suitable for assistance and routing after workflow-specific calibration. Unsuita
 | Paraphrase drift | Mean range 0.201; max 0.805; 5/27 decision flips | Four wordings per item, separate from batch drift |
 | Parallel language slice | zh-TW 85.8–87.5%; zh-CN 88.3–89.2%; en-US 90.8% | Same 120 ids, N=8; two instruction languages |
 
+Historical JevBench public-question aggregates (October 2, 2026), dataset provenance and licensing are in [results/jevbench_public231.json](results/jevbench_public231.json). These CLI-scored results are not the official JevBench Score.
+
 Numbers are imported historical measurements, not new runs. Full denominators, confidence intervals and selective coverage are in results/A and results/B. See adversarial/REPORT.md for four reviewers' evidence and corrections. Maximum answer probability is distinct from the API confidence field and is not a guarantee of correctness.
 
 ## Test conditions
@@ -98,6 +100,8 @@ Code: MIT, [LICENSE](LICENSE). Original documents, aggregate results and synthet
 | 批次Q=4→64對單題漂移 | 平均絕對ΔP 0.03415→0.10174；最大0.69547→0.88322 | 30則；Q64的choice同答26/30，noul同側1735/1890 |
 | 換問法漂移 | 平均跨度0.201，最大0.805，5/27題答案翻轉 | 每題四種問法，與批次漂移分開 |
 | 平行語言切片 | zh-TW 85.8–87.5%; zh-CN 88.3–89.2%; en-US 90.8% | 相同120個id，8選1；兩種指示語言 |
+
+JevBench公開題的2026-10-02彙總、資料來源與授權見[results/jevbench_public231.json](results/jevbench_public231.json)；這是CLI計分結果，不是官方JevBench Score。
 
 以上是既有實測，非本次新跑。選項曲線與各領域完整表、信賴區間及高信心涵蓋率見results/A、results/B。
 表中信心採最高答案機率（noul為max(p,1−p)），不同於API的confidence，也不是答對率。

@@ -22,7 +22,7 @@ python3 jev-cli/jev --dry-run noul "商品有瑕疵" "是否要求退款？"
 python3 jev-cli/jev eval data/synthetic/business.jsonl
 ```
 
-完整请求用 `ask -` 從stdin讀取 `{state, questions}`；每題包含type、instructions，多選題另含criteria。
+完整請求用 `ask -` 從stdin讀取 `{state, questions}`；每題包含type、instructions，多選題另含criteria。
 一次最多64題、choice／score各2–26個選項、UTF-8 body最多64KiB；模型上限8192 tokens。
 26是CLI上限，不代表適合塞滿；分類先試8–12個互斥選項並附清楚描述。
 一次只判一則訊息，同一則可多題；不要把多則訊息塞進state。

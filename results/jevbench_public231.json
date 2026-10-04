@@ -1,0 +1,30 @@
+{
+  "date": "2026-10-02",
+  "model": "crh225/plumb-4b",
+  "dataset": {
+    "source": "https://github.com/fstandhartinger/jevbench/tree/main/datasets/public",
+    "license": "MIT"
+  },
+  "measurements": [
+    {
+      "hardware": "Apple M4 24GB",
+      "n": 231,
+      "answered": 231,
+      "correct": 203,
+      "accuracy": 0.8788,
+      "ece": 0.0334,
+      "latency_ms_p50": 1019.2,
+      "latency_ms_p95": 8729.5
+    },
+    {
+      "hardware": "NVIDIA RTX 4070 Ti SUPER",
+      "n": 231,
+      "answered": 231,
+      "correct": 203,
+      "accuracy": 0.8788,
+      "ece": 0.0437,
+      "latency_ms_p50": 133.4,
+      "latency_ms_p95": 629.5
+    }
+  ]
+}

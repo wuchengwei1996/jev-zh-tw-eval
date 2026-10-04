@@ -11,7 +11,7 @@ ECE（校準誤差）以預測答案機率分 10 個等寬區間；越低越接�
 95%信賴區間使用 Wilson 法；延遲是 CLI 牆鐘時間，含程式啟動，p50為中位數。
 原測試使用 crh225/plumb-4b、Ollama /v1/systemone，主力 gpu GPU；部分請求由 Mac local 回答。
 準確度涵蓋兩台成功回答；除 Q 實驗固定 gpu 外，延遲只計 gpu，多段策略只計全程 gpu 並加總各段。
-兩位測試員共用 GPU，延遲受爭用影響，不是獨占 GPU 的效能基準。
+量測期間 GPU 與其他工作共用，延遲偏高；不是獨占 GPU 的效能基準。
 
 ## 維度一：選項數 N（名稱版與描述版）
 
@@ -177,4 +177,4 @@ EmoBank 同一批 133 句英文，人工 Valence（情緒正負向）平均分 1
 
 指標出處：A/results/exp1_*.raw.jsonl、exp2_raw.jsonl、exp3_*.raw.jsonl、exp4_score_k*.raw.jsonl；以eval/summarize_a.py純彙整函式重算，JSON正規化後與A/results/summary.json一致。
 
-公開整理註：主機標籤匿名化；此處來源檔名是原實驗證據索引，原始逐题輸出未收錄。公開可重現範圍見 README.md 與 eval/README.md。
+公開整理註：主機標籤匿名化；此處來源檔名是原實驗證據索引，原始逐題輸出未收錄。公開可重現範圍見 README.md 與 eval/README.md。
