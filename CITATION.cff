@@ -1,0 +1,39 @@
+cff-version: 1.2.0
+message: "If you use this evaluation or reproducible harness, please cite it using this metadata."
+title: "Traditional Chinese Evaluation and Adversarial Verification of Jev-style Decision Models"
+authors:
+  - alias: "wuchengwei1996"
+repository-code: "https://github.com/wuchengwei1996/jev-zh-tw-eval"
+license: MIT
+date-released: "2026-10-04"
+keywords:
+  - jev
+  - typesafe
+  - system-one
+  - decision-model
+  - llm-evaluation
+  - benchmark
+  - traditional-chinese
+  - zh-tw
+  - taiwan
+  - ollama
+  - plumb-4b
+  - prompt-injection
+  - adversarial-testing
+  - calibration
+  - text-classification
+  - intent-classification
+  - llm-as-judge
+  - ai-agents
+  - local-llm
+  - structured-output
+abstract: >-
+  Independent evaluation of Jev-compatible TypeSafe System One decision models
+  in Traditional Chinese (zh-TW), using Plumb-4B through Ollama /v1/systemone.
+  The archive includes historical aggregate results, MASSIVE and original
+  synthetic fixtures, a portable CLI, reproduction procedures, and adversarial
+  testing of prompt injection, wording sensitivity, and confident errors.
+  Findings support workflow-calibrated assistance and routing, with human
+  confirmation or deterministic rules for high-risk actions.
+  Code is MIT; original documents, aggregate results, and synthetic fixtures
+  are CC BY 4.0; upstream datasets and model weights retain their own licenses.
