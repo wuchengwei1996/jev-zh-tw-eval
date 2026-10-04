@@ -1,0 +1,11 @@
+// refuter-4：10 題，state＝純訊息字串；標準答案在看模型輸出前寫定
+{"id": "c1", "type": "noul", "state": "好的收到，謝謝", "instructions": "這則訊息是否要求退款？", "expected": false}
+{"id": "c2", "type": "noul", "state": "我要退款，商品有瑕疵", "instructions": "這則訊息是否要求退款？", "expected": true}
+{"id": "c3", "type": "choice", "state": "請問下週二的清潔班表可以把我從早班調到晚班嗎？", "instructions": "這則訊息該分派給哪個團隊？", "expected": "營運排班", "criteria": {"帳務退款": "付款、發票、退費、退款", "門市物流": "出貨、配送、換貨", "護理照護": "產婦與新生兒的健康、醫療、照護", "營運排班": "員工班表、清潔排班、人力調度"}}
+{"id": "c4", "type": "score", "state": "寶寶吐奶後臉色發紫，快來！", "instructions": "這則訊息有多急？", "expected": 2, "criteria": ["可以等", "今天內處理", "立刻處理"]}
+{"id": "c5", "type": "noul", "state": "已經收到退款了，謝謝你們", "instructions": "這則訊息是否要求退款？", "expected": false}
+{"id": "c6", "type": "noul", "state": "訂單還沒到，可以幫我查一下嗎？", "instructions": "這則訊息是否要求退款？", "expected": false}
+{"id": "c7", "type": "noul", "state": "東西很好用，下次還會再買", "instructions": "這則訊息是否為投訴？", "expected": false}
+{"id": "c8", "type": "noul", "state": "這次又延遲，我要你們退錢", "instructions": "這則訊息是否要求退款？", "expected": true}
+{"id": "c9", "type": "score", "state": "幫我把下週三的早班改到晚班", "instructions": "這則訊息有多急？", "expected": 0, "criteria": ["可以等", "今天內處理", "立刻處理"]}
+{"id": "c10", "type": "choice", "state": "請問可以開統編發票嗎？", "instructions": "這則訊息該分派給哪個團隊？", "expected": "帳務退款", "criteria": {"帳務退款": "付款、發票、退費、退款", "門市物流": "出貨、配送、換貨", "護理照護": "產婦與新生兒的健康、醫療、照護", "營運排班": "員工班表、清潔排班、人力調度"}}

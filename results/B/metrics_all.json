@@ -1,0 +1,844 @@
+{
+  "cna_choice_title": {
+    "n_items": 192,
+    "answered": 192,
+    "failed": 0,
+    "correct": 136,
+    "accuracy": 0.7083,
+    "acc_ci95": [
+      0.64,
+      0.768
+    ],
+    "ece": 0.0681,
+    "mean_conf": 0.7053,
+    "highconf_n": 27,
+    "highconf_wrong": 2,
+    "highconf_wrong_over_all": 0.0104,
+    "err_rate_when_conf_ge_0.9": 0.0741,
+    "latency_ms_p50": 260.5,
+    "latency_ms_p95": 579.4,
+    "served_by": {
+      "gpu": 192
+    },
+    "latency_gpu_p50": 260.5,
+    "latency_gpu_p95": 579.4,
+    "input_tokens_p50": 341.0,
+    "per_class_acc": {
+      "兩岸": "10/18",
+      "國際": "10/16",
+      "地方": "9/16",
+      "娛樂": "18/19",
+      "政治": "12/18",
+      "文化": "12/18",
+      "生活": "10/14",
+      "社會": "9/20",
+      "科技": "17/19",
+      "財經": "9/14",
+      "運動": "20/20"
+    },
+    "top_confusions": [
+      [
+        "社會→地方",
+        6
+      ],
+      [
+        "社會→政治",
+        4
+      ],
+      [
+        "國際→社會",
+        3
+      ],
+      [
+        "兩岸→財經",
+        3
+      ],
+      [
+        "地方→政治",
+        3
+      ],
+      [
+        "政治→兩岸",
+        2
+      ],
+      [
+        "政治→地方",
+        2
+      ],
+      [
+        "兩岸→生活",
+        2
+      ]
+    ],
+    "top2_acc": 0.8802
+  },
+  "cna_choice_titlesum": {
+    "n_items": 192,
+    "answered": 192,
+    "failed": 0,
+    "correct": 138,
+    "accuracy": 0.7188,
+    "acc_ci95": [
+      0.651,
+      0.778
+    ],
+    "ece": 0.0853,
+    "mean_conf": 0.7235,
+    "highconf_n": 38,
+    "highconf_wrong": 1,
+    "highconf_wrong_over_all": 0.0052,
+    "err_rate_when_conf_ge_0.9": 0.0263,
+    "latency_ms_p50": 263.7,
+    "latency_ms_p95": 504.3,
+    "served_by": {
+      "gpu": 192
+    },
+    "latency_gpu_p50": 263.7,
+    "latency_gpu_p95": 504.3,
+    "input_tokens_p50": 415.0,
+    "per_class_acc": {
+      "兩岸": "7/18",
+      "國際": "10/16",
+      "地方": "11/16",
+      "娛樂": "18/19",
+      "政治": "16/18",
+      "文化": "13/18",
+      "生活": "9/14",
+      "社會": "9/20",
+      "科技": "18/19",
+      "財經": "7/14",
+      "運動": "20/20"
+    },
+    "top_confusions": [
+      [
+        "兩岸→政治",
+        9
+      ],
+      [
+        "社會→地方",
+        6
+      ],
+      [
+        "生活→地方",
+        4
+      ],
+      [
+        "社會→政治",
+        4
+      ],
+      [
+        "地方→政治",
+        4
+      ],
+      [
+        "國際→社會",
+        3
+      ],
+      [
+        "財經→國際",
+        3
+      ],
+      [
+        "兩岸→財經",
+        2
+      ]
+    ],
+    "top2_acc": 0.8958
+  },
+  "cna_noul_title": {
+    "n_items": 192,
+    "answered": 192,
+    "failed": 0,
+    "correct": 144,
+    "accuracy": 0.75,
+    "acc_ci95": [
+      0.684,
+      0.806
+    ],
+    "ece": 0.0502,
+    "mean_conf": 0.7439,
+    "highconf_n": 14,
+    "highconf_wrong": 2,
+    "highconf_wrong_over_all": 0.0104,
+    "err_rate_when_conf_ge_0.9": 0.1429,
+    "latency_ms_p50": 212.7,
+    "latency_ms_p95": 498.2,
+    "served_by": {
+      "gpu": 192
+    },
+    "latency_gpu_p50": 212.7,
+    "latency_gpu_p95": 498.2,
+    "input_tokens_p50": 142.0,
+    "confusion": {
+      "tp": 15,
+      "fp": 45,
+      "fn": 3,
+      "tn": 129
+    },
+    "precision": 0.25,
+    "recall": 0.8333,
+    "f1": 0.3846,
+    "pos_rate_expected": 0.0938
+  },
+  "cna_noul_titlesum": {
+    "n_items": 192,
+    "answered": 192,
+    "failed": 0,
+    "correct": 158,
+    "accuracy": 0.8229,
+    "acc_ci95": [
+      0.763,
+      0.87
+    ],
+    "ece": 0.0543,
+    "mean_conf": 0.7874,
+    "highconf_n": 30,
+    "highconf_wrong": 3,
+    "highconf_wrong_over_all": 0.0156,
+    "err_rate_when_conf_ge_0.9": 0.1,
+    "latency_ms_p50": 223.4,
+    "latency_ms_p95": 357.2,
+    "served_by": {
+      "gpu": 192
+    },
+    "latency_gpu_p50": 223.4,
+    "latency_gpu_p95": 357.2,
+    "input_tokens_p50": 216.0,
+    "confusion": {
+      "tp": 17,
+      "fp": 33,
+      "fn": 1,
+      "tn": 141
+    },
+    "precision": 0.34,
+    "recall": 0.9444,
+    "f1": 0.5,
+    "pos_rate_expected": 0.0938
+  },
+  "cna_noul_title_noexcl": {
+    "n_items": 192,
+    "answered": 192,
+    "failed": 0,
+    "correct": 144,
+    "accuracy": 0.75,
+    "acc_ci95": [
+      0.684,
+      0.806
+    ],
+    "ece": 0.0751,
+    "mean_conf": 0.8115,
+    "highconf_n": 76,
+    "highconf_wrong": 4,
+    "highconf_wrong_over_all": 0.0208,
+    "err_rate_when_conf_ge_0.9": 0.0526,
+    "latency_ms_p50": 213.4,
+    "latency_ms_p95": 296.7,
+    "served_by": {
+      "gpu": 192
+    },
+    "latency_gpu_p50": 213.4,
+    "latency_gpu_p95": 296.7,
+    "input_tokens_p50": 121.0,
+    "confusion": {
+      "tp": 13,
+      "fp": 43,
+      "fn": 5,
+      "tn": 131
+    },
+    "precision": 0.2321,
+    "recall": 0.7222,
+    "f1": 0.3514,
+    "pos_rate_expected": 0.0938
+  },
+  "cna_noul_titlesum_noexcl": {
+    "n_items": 192,
+    "answered": 192,
+    "failed": 0,
+    "correct": 145,
+    "accuracy": 0.7552,
+    "acc_ci95": [
+      0.69,
+      0.811
+    ],
+    "ece": 0.0907,
+    "mean_conf": 0.8456,
+    "highconf_n": 92,
+    "highconf_wrong": 4,
+    "highconf_wrong_over_all": 0.0208,
+    "err_rate_when_conf_ge_0.9": 0.0435,
+    "latency_ms_p50": 235.3,
+    "latency_ms_p95": 1354.3,
+    "served_by": {
+      "gpu": 114,
+      "local": 78
+    },
+    "latency_gpu_p50": 207.8,
+    "latency_gpu_p95": 298.8,
+    "input_tokens_p50": 195.0,
+    "confusion": {
+      "tp": 14,
+      "fp": 43,
+      "fn": 4,
+      "tn": 131
+    },
+    "precision": 0.2456,
+    "recall": 0.7778,
+    "f1": 0.3733,
+    "pos_rate_expected": 0.0938
+  },
+  "ltn_choice_title": {
+    "n_items": 320,
+    "answered": 320,
+    "failed": 0,
+    "correct": 198,
+    "accuracy": 0.6188,
+    "acc_ci95": [
+      0.564,
+      0.67
+    ],
+    "ece": 0.1098,
+    "mean_conf": 0.7272,
+    "highconf_n": 82,
+    "highconf_wrong": 9,
+    "highconf_wrong_over_all": 0.0281,
+    "err_rate_when_conf_ge_0.9": 0.1098,
+    "latency_ms_p50": 286.2,
+    "latency_ms_p95": 2220.2,
+    "served_by": {
+      "gpu": 294,
+      "local": 26
+    },
+    "latency_gpu_p50": 282.1,
+    "latency_gpu_p95": 390.4,
+    "input_tokens_p50": 265.0,
+    "per_class_acc": {
+      "國際": "26/40",
+      "地方": "17/40",
+      "娛樂": "37/40",
+      "政治": "26/40",
+      "生活": "10/40",
+      "社會": "18/40",
+      "財經": "24/40",
+      "體育": "40/40"
+    },
+    "top_confusions": [
+      [
+        "生活→地方",
+        26
+      ],
+      [
+        "社會→地方",
+        16
+      ],
+      [
+        "地方→政治",
+        15
+      ],
+      [
+        "政治→地方",
+        10
+      ],
+      [
+        "財經→生活",
+        8
+      ],
+      [
+        "國際→政治",
+        6
+      ],
+      [
+        "國際→社會",
+        5
+      ],
+      [
+        "生活→娛樂",
+        4
+      ]
+    ],
+    "top2_acc": 0.8781
+  },
+  "ltn_choice_titlesum": {
+    "n_items": 320,
+    "answered": 320,
+    "failed": 0,
+    "correct": 211,
+    "accuracy": 0.6594,
+    "acc_ci95": [
+      0.606,
+      0.709
+    ],
+    "ece": 0.1069,
+    "mean_conf": 0.7468,
+    "highconf_n": 92,
+    "highconf_wrong": 6,
+    "highconf_wrong_over_all": 0.0187,
+    "err_rate_when_conf_ge_0.9": 0.0652,
+    "latency_ms_p50": 292.4,
+    "latency_ms_p95": 523.9,
+    "served_by": {
+      "gpu": 320
+    },
+    "latency_gpu_p50": 292.4,
+    "latency_gpu_p95": 523.9,
+    "input_tokens_p50": 337.0,
+    "per_class_acc": {
+      "國際": "30/40",
+      "地方": "17/40",
+      "娛樂": "38/40",
+      "政治": "34/40",
+      "生活": "10/40",
+      "社會": "20/40",
+      "財經": "22/40",
+      "體育": "40/40"
+    },
+    "top_confusions": [
+      [
+        "生活→地方",
+        28
+      ],
+      [
+        "地方→政治",
+        20
+      ],
+      [
+        "社會→地方",
+        18
+      ],
+      [
+        "財經→生活",
+        10
+      ],
+      [
+        "政治→地方",
+        6
+      ],
+      [
+        "國際→政治",
+        5
+      ],
+      [
+        "國際→社會",
+        4
+      ],
+      [
+        "財經→國際",
+        3
+      ]
+    ],
+    "top2_acc": 0.9281
+  },
+  "senti_chnsenticorp_noul": {
+    "n_items": 150,
+    "answered": 150,
+    "failed": 0,
+    "correct": 128,
+    "accuracy": 0.8533,
+    "acc_ci95": [
+      0.788,
+      0.901
+    ],
+    "ece": 0.0251,
+    "mean_conf": 0.8784,
+    "highconf_n": 91,
+    "highconf_wrong": 6,
+    "highconf_wrong_over_all": 0.04,
+    "err_rate_when_conf_ge_0.9": 0.0659,
+    "latency_ms_p50": 298.0,
+    "latency_ms_p95": 2321.9,
+    "served_by": {
+      "gpu": 121,
+      "local": 29
+    },
+    "latency_gpu_p50": 256.5,
+    "latency_gpu_p95": 413.0,
+    "input_tokens_p50": 158.5,
+    "confusion": {
+      "tp": 60,
+      "fp": 8,
+      "fn": 14,
+      "tn": 68
+    },
+    "precision": 0.8824,
+    "recall": 0.8108,
+    "f1": 0.8451,
+    "pos_rate_expected": 0.4933
+  },
+  "senti_amazonzh_noul": {
+    "n_items": 120,
+    "answered": 120,
+    "failed": 0,
+    "correct": 97,
+    "accuracy": 0.8083,
+    "acc_ci95": [
+      0.729,
+      0.869
+    ],
+    "ece": 0.0779,
+    "mean_conf": 0.8863,
+    "highconf_n": 77,
+    "highconf_wrong": 6,
+    "highconf_wrong_over_all": 0.05,
+    "err_rate_when_conf_ge_0.9": 0.0779,
+    "latency_ms_p50": 310.1,
+    "latency_ms_p95": 411.7,
+    "served_by": {
+      "gpu": 120
+    },
+    "latency_gpu_p50": 310.1,
+    "latency_gpu_p95": 411.7,
+    "input_tokens_p50": 147.0,
+    "confusion": {
+      "tp": 43,
+      "fp": 6,
+      "fn": 17,
+      "tn": 54
+    },
+    "precision": 0.8776,
+    "recall": 0.7167,
+    "f1": 0.789,
+    "pos_rate_expected": 0.5
+  },
+  "senti_amazonzh_score": {
+    "n_items": 150,
+    "answered": 150,
+    "failed": 0,
+    "correct": 77,
+    "accuracy": 0.5133,
+    "acc_ci95": [
+      0.434,
+      0.592
+    ],
+    "ece": 0.0286,
+    "mean_conf": 0.5419,
+    "highconf_n": 3,
+    "highconf_wrong": 1,
+    "highconf_wrong_over_all": 0.0067,
+    "err_rate_when_conf_ge_0.9": 0.3333,
+    "latency_ms_p50": 319.5,
+    "latency_ms_p95": 1376.8,
+    "served_by": {
+      "gpu": 102,
+      "local": 48
+    },
+    "latency_gpu_p50": 304.9,
+    "latency_gpu_p95": 398.5,
+    "input_tokens_p50": 195.5,
+    "exact": 0.5133,
+    "within1": 0.8667,
+    "mae": 0.653
+  },
+  "senti_dianping_score": {
+    "n_items": 100,
+    "answered": 100,
+    "failed": 0,
+    "correct": 49,
+    "accuracy": 0.49,
+    "acc_ci95": [
+      0.394,
+      0.587
+    ],
+    "ece": 0.0787,
+    "mean_conf": 0.5537,
+    "highconf_n": 0,
+    "highconf_wrong": 0,
+    "highconf_wrong_over_all": 0.0,
+    "err_rate_when_conf_ge_0.9": null,
+    "latency_ms_p50": 271.6,
+    "latency_ms_p95": 336.3,
+    "served_by": {
+      "gpu": 100
+    },
+    "latency_gpu_p50": 271.6,
+    "latency_gpu_p95": 336.3,
+    "input_tokens_p50": 241.5,
+    "exact": 0.49,
+    "within1": 0.96,
+    "mae": 0.55
+  },
+  "safety_toxicn_noul": {
+    "n_items": 150,
+    "answered": 150,
+    "failed": 0,
+    "correct": 110,
+    "accuracy": 0.7333,
+    "acc_ci95": [
+      0.657,
+      0.798
+    ],
+    "ece": 0.0639,
+    "mean_conf": 0.7467,
+    "highconf_n": 28,
+    "highconf_wrong": 1,
+    "highconf_wrong_over_all": 0.0067,
+    "err_rate_when_conf_ge_0.9": 0.0357,
+    "latency_ms_p50": 226.3,
+    "latency_ms_p95": 363.8,
+    "served_by": {
+      "gpu": 150
+    },
+    "latency_gpu_p50": 226.3,
+    "latency_gpu_p95": 363.8,
+    "input_tokens_p50": 156.5,
+    "confusion": {
+      "tp": 59,
+      "fp": 22,
+      "fn": 18,
+      "tn": 51
+    },
+    "precision": 0.7284,
+    "recall": 0.7662,
+    "f1": 0.7468,
+    "pos_rate_expected": 0.5133
+  },
+  "safety_cold_noul": {
+    "n_items": 150,
+    "answered": 150,
+    "failed": 0,
+    "correct": 104,
+    "accuracy": 0.6933,
+    "acc_ci95": [
+      0.615,
+      0.762
+    ],
+    "ece": 0.0489,
+    "mean_conf": 0.7291,
+    "highconf_n": 18,
+    "highconf_wrong": 1,
+    "highconf_wrong_over_all": 0.0067,
+    "err_rate_when_conf_ge_0.9": 0.0556,
+    "latency_ms_p50": 234.0,
+    "latency_ms_p95": 2248.1,
+    "served_by": {
+      "gpu": 121,
+      "local": 29
+    },
+    "latency_gpu_p50": 219.4,
+    "latency_gpu_p95": 340.8,
+    "input_tokens_p50": 168.0,
+    "confusion": {
+      "tp": 54,
+      "fp": 39,
+      "fn": 7,
+      "tn": 50
+    },
+    "precision": 0.5806,
+    "recall": 0.8852,
+    "f1": 0.7013,
+    "pos_rate_expected": 0.4067
+  },
+  "safety_smsspam_en_noul": {
+    "n_items": 150,
+    "answered": 150,
+    "failed": 0,
+    "correct": 133,
+    "accuracy": 0.8867,
+    "acc_ci95": [
+      0.826,
+      0.928
+    ],
+    "ece": 0.0754,
+    "mean_conf": 0.8461,
+    "highconf_n": 80,
+    "highconf_wrong": 1,
+    "highconf_wrong_over_all": 0.0067,
+    "err_rate_when_conf_ge_0.9": 0.0125,
+    "latency_ms_p50": 220.1,
+    "latency_ms_p95": 500.1,
+    "served_by": {
+      "gpu": 150
+    },
+    "latency_gpu_p50": 220.1,
+    "latency_gpu_p95": 500.1,
+    "input_tokens_p50": 162.0,
+    "confusion": {
+      "tp": 71,
+      "fp": 13,
+      "fn": 4,
+      "tn": 62
+    },
+    "precision": 0.8452,
+    "recall": 0.9467,
+    "f1": 0.8931,
+    "pos_rate_expected": 0.5
+  },
+  "en_agnews_choice": {
+    "n_items": 100,
+    "answered": 100,
+    "failed": 0,
+    "correct": 86,
+    "accuracy": 0.86,
+    "acc_ci95": [
+      0.779,
+      0.915
+    ],
+    "ece": 0.0408,
+    "mean_conf": 0.8916,
+    "highconf_n": 66,
+    "highconf_wrong": 3,
+    "highconf_wrong_over_all": 0.03,
+    "err_rate_when_conf_ge_0.9": 0.0455,
+    "latency_ms_p50": 216.1,
+    "latency_ms_p95": 331.5,
+    "served_by": {
+      "gpu": 100
+    },
+    "latency_gpu_p50": 216.1,
+    "latency_gpu_p95": 331.5,
+    "input_tokens_p50": 208.0,
+    "per_class_acc": {
+      "Business": "30/30",
+      "Sci/Tech": "15/26",
+      "Sports": "23/23",
+      "World": "18/21"
+    },
+    "top_confusions": [
+      [
+        "Sci/Tech→Business",
+        10
+      ],
+      [
+        "World→Sci/Tech",
+        2
+      ],
+      [
+        "World→Sports",
+        1
+      ],
+      [
+        "Sci/Tech→Sports",
+        1
+      ]
+    ],
+    "top2_acc": 0.98
+  },
+  "en_yahoo_choice": {
+    "n_items": 100,
+    "answered": 100,
+    "failed": 0,
+    "correct": 70,
+    "accuracy": 0.7,
+    "acc_ci95": [
+      0.604,
+      0.781
+    ],
+    "ece": 0.0764,
+    "mean_conf": 0.7574,
+    "highconf_n": 16,
+    "highconf_wrong": 1,
+    "highconf_wrong_over_all": 0.01,
+    "err_rate_when_conf_ge_0.9": 0.0625,
+    "latency_ms_p50": 300.2,
+    "latency_ms_p95": 1885.0,
+    "served_by": {
+      "local": 23,
+      "gpu": 77
+    },
+    "latency_gpu_p50": 287.6,
+    "latency_gpu_p95": 347.1,
+    "input_tokens_p50": 412.0,
+    "per_class_acc": {
+      "Business & Finance": "4/10",
+      "Computers & Internet": "10/11",
+      "Education & Reference": "4/10",
+      "Entertainment & Music": "7/10",
+      "Family & Relationships": "8/10",
+      "Health": "11/11",
+      "Politics & Government": "3/8",
+      "Science & Mathematics": "11/12",
+      "Society & Culture": "5/9",
+      "Sports": "7/9"
+    },
+    "top_confusions": [
+      [
+        "Business & Finance→Education & Reference",
+        3
+      ],
+      [
+        "Politics & Government→Society & Culture",
+        3
+      ],
+      [
+        "Business & Finance→Computers & Internet",
+        2
+      ],
+      [
+        "Education & Reference→Science & Mathematics",
+        2
+      ],
+      [
+        "Entertainment & Music→Computers & Internet",
+        2
+      ],
+      [
+        "Politics & Government→Business & Finance",
+        2
+      ],
+      [
+        "Society & Culture→Health",
+        1
+      ],
+      [
+        "Family & Relationships→Society & Culture",
+        1
+      ]
+    ],
+    "top2_acc": 0.84
+  },
+  "en_dbpedia_choice": {
+    "n_items": 100,
+    "answered": 100,
+    "failed": 0,
+    "correct": 97,
+    "accuracy": 0.97,
+    "acc_ci95": [
+      0.915,
+      0.99
+    ],
+    "ece": 0.0929,
+    "mean_conf": 0.8905,
+    "highconf_n": 54,
+    "highconf_wrong": 0,
+    "highconf_wrong_over_all": 0.0,
+    "err_rate_when_conf_ge_0.9": 0.0,
+    "latency_ms_p50": 319.5,
+    "latency_ms_p95": 2146.2,
+    "served_by": {
+      "gpu": 68,
+      "local": 32
+    },
+    "latency_gpu_p50": 286.7,
+    "latency_gpu_p95": 1432.7,
+    "input_tokens_p50": 402.5,
+    "per_class_acc": {
+      "Album": "6/6",
+      "Animal": "10/11",
+      "Artist": "12/12",
+      "Athlete": "5/5",
+      "Building": "8/10",
+      "Company": "6/6",
+      "EducationalInstitution": "7/7",
+      "Film": "4/4",
+      "MeanOfTransportation": "12/12",
+      "NaturalPlace": "8/8",
+      "OfficeHolder": "7/7",
+      "Plant": "4/4",
+      "Village": "5/5",
+      "WrittenWork": "3/3"
+    },
+    "top_confusions": [
+      [
+        "Building→WrittenWork",
+        1
+      ],
+      [
+        "Building→EducationalInstitution",
+        1
+      ],
+      [
+        "Animal→Athlete",
+        1
+      ]
+    ],
+    "top2_acc": 0.99
+  }
+}

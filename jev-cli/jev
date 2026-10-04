@@ -1,0 +1,869 @@
+#!/usr/bin/env python3
+"""jev — Jev 相容的結構化判斷 CLI（noul／choice／score＋機率）。
+
+預設 backend=local：依序嘗試 config 裡的 Ollama endpoint（≥0.35，原生 /v1/systemone），
+第一個健康的就用；費用 0。backend=typesafe 才會打官方付費 API，需要 key，且有每日 token 上限。
+
+只用 Python 標準庫，相容 3.9。說明見同層 SKILL.md。
+"""
+import argparse
+import fcntl
+import json
+import math
+import os
+import re
+import shutil
+import subprocess
+import sys
+import tempfile
+import time
+import uuid
+import urllib.error
+import urllib.parse
+import urllib.request
+
+HERE = os.path.dirname(os.path.realpath(__file__))
+SKILL_DIR = HERE
+
+DEFAULT_CONFIG = {
+    "model": "crh225/plumb-4b",
+    "endpoints": [{"name": "local", "url": "http://127.0.0.1:11434", "autostart": False}],
+    "typesafe": {"base_url": "https://api.typesafe.ai", "model": "jev-latest",
+                 "daily_input_token_cap": 100000},
+}
+MAX_QUESTIONS = 64
+MIN_OPTIONS, MAX_OPTIONS = 2, 26
+HEALTH_TTL_OK = 10.0     # 健康結果短快取：主機斷線時別讓 POST 白等
+HEALTH_TTL_FAIL = 60.0   # 失敗／缺模型／逾時／版本不符結果長快取
+DIGEST_TTL_OK = 600.0    # 模型版本「符合」的結果快取 10 分鐘
+MAX_BODY_BYTES = 65536   # Ollama 收 /v1/systemone 的 body 上限 64 KiB（超過回 413）
+DEFAULT_POST_TIMEOUT = 40.0  # 單次推論逾時；JEV_POST_TIMEOUT 可覆寫
+_AUTOSTARTED = set()     # 本次 CLI 執行已嘗試過 autostart 的 endpoint url
+LOCAL_HOSTS = ("127.0.0.1", "localhost", "::1")
+
+EXIT_OK, EXIT_ERR, EXIT_BAD_REQUEST, EXIT_NO_KEY, EXIT_CAP = 0, 1, 2, 3, 4
+
+
+class JevError(Exception):
+    def __init__(self, msg, code=EXIT_ERR, detail=None):
+        super().__init__(msg)
+        self.code = code
+        self.detail = detail
+
+
+# ── 設定 ────────────────────────────────────────────────────────────────
+
+def load_config():
+    path = os.environ.get("JEV_CONFIG") or os.path.join(SKILL_DIR, "config.json")
+    cfg = json.loads(json.dumps(DEFAULT_CONFIG))
+    if os.path.isfile(path):
+        with open(path, encoding="utf-8") as f:
+            custom_config = json.load(f)
+        for k, v in custom_config.items():
+            if k == "typesafe" and isinstance(v, dict):
+                cfg["typesafe"].update(v)
+            elif not k.startswith("_"):
+                cfg[k] = v
+    # 版本釘選只綁 config.json 裡的那個模型；用 JEV_MODEL／--model 換成別的模型就不檢查
+    if cfg.get("model_digest"):
+        cfg["_pin"] = {"model": cfg["model"], "digest": _norm_digest(cfg["model_digest"])}
+    if os.environ.get("JEV_ENDPOINTS"):
+        cfg["endpoints"] = parse_endpoints(os.environ["JEV_ENDPOINTS"])
+    elif os.environ.get("OLLAMA_URL"):
+        cfg["endpoints"] = parse_endpoints(os.environ["OLLAMA_URL"])
+    if os.environ.get("JEV_MODEL"):
+        cfg["model"] = os.environ["JEV_MODEL"]
+    if os.environ.get("TYPESAFE_BASE_URL"):
+        cfg["typesafe"]["base_url"] = os.environ["TYPESAFE_BASE_URL"]
+    if os.environ.get("JEV_DAILY_INPUT_TOKEN_CAP"):
+        cfg["typesafe"]["daily_input_token_cap"] = int(os.environ["JEV_DAILY_INPUT_TOKEN_CAP"])
+    return cfg
+
+
+def parse_endpoints(spec):
+    """'name=url,url2' → [{"name":..., "url":...}]；沒給名稱就用主機名。
+
+    用參數或環境變數指定的 endpoint 一律不自動啟動 ollama；只有 config.json 明寫 autostart 才會。
+    """
+    eps = []
+    for part in spec.split(","):
+        part = part.strip()
+        if not part:
+            continue
+        name, _, url = part.partition("=") if "=" in part.split("://")[0] else ("", "", part)
+        url = url.rstrip("/")
+        host = urllib.parse.urlparse(url).hostname or url
+        eps.append({"name": name or host, "url": url, "autostart": False})
+    return eps
+
+
+def cache_dir():
+    d = os.environ.get("JEV_CACHE_DIR") or os.path.join(os.path.expanduser("~"), ".cache", "jev")
+    try:
+        os.makedirs(d, exist_ok=True)
+    except OSError:
+        uid = os.getuid() if hasattr(os, "getuid") else 0
+        d = os.path.join(tempfile.gettempdir(), "jev-%d" % uid)
+        try:
+            os.makedirs(d, mode=0o700, exist_ok=True)
+        except OSError:
+            pass
+    return d
+
+
+# ── HTTP ───────────────────────────────────────────────────────────────
+
+class _NoRedirect(urllib.request.HTTPRedirectHandler):
+    """送 key 的請求不可被轉址帶到別台：遇到 3xx 一律當錯誤。"""
+
+    def redirect_request(self, req, fp, code, msg, headers, newurl):
+        raise urllib.error.HTTPError(req.full_url, code,
+                                     "redirect refused (%s)" % newurl, headers, fp)
+
+
+def _open(req, timeout):
+    return urllib.request.build_opener(_NoRedirect).open(req, timeout=timeout)
+
+
+def encode_body(body):
+    """序列化要送出的 JSON。中文保持 UTF-8 原字（不跳脫成 \\uXXXX，否則每字 6 bytes）；
+    超過 MAX_BODY_BYTES 直接丟請求錯誤，呼叫端要在連線前先檢查。"""
+    data = json.dumps(body, ensure_ascii=False).encode("utf-8")
+    if len(data) > MAX_BODY_BYTES:
+        raise JevError("請求太大（%d bytes，上限 %d）；請縮短 state 或分批"
+                       % (len(data), MAX_BODY_BYTES), EXIT_BAD_REQUEST)
+    return data
+
+
+def post_timeout():
+    raw = os.environ.get("JEV_POST_TIMEOUT")
+    if not raw:
+        return DEFAULT_POST_TIMEOUT
+    try:
+        t = float(raw)
+    except ValueError:
+        t = 0.0
+    if not t > 0:
+        raise JevError("JEV_POST_TIMEOUT 必須是正數秒數，收到 %r" % raw, EXIT_BAD_REQUEST)
+    return t
+
+
+def http_json(method, url, body=None, headers=None, timeout=120.0):
+    data = encode_body(body) if body is not None else None
+    req = urllib.request.Request(url, data=data, method=method)
+    req.add_header("Content-Type", "application/json")
+    for k, v in (headers or {}).items():
+        req.add_header(k, v)
+    with _open(req, timeout) as resp:
+        return resp.status, json.loads(resp.read().decode("utf-8") or "null")
+
+
+def http_error_body(e):
+    try:
+        return json.loads(e.read().decode("utf-8") or "null")
+    except Exception:
+        return None
+
+
+# ── 健康檢查與 endpoint 選擇 ──────────────────────────────────────────
+
+def _health_path():
+    return os.path.join(cache_dir(), "health.json")
+
+
+def read_health():
+    try:
+        with open(_health_path(), encoding="utf-8") as f:
+            h = json.load(f)
+        return h if isinstance(h, dict) else {}
+    except (OSError, ValueError):
+        return {}
+
+
+def write_health(h):
+    """健康快取只是最佳化：任何寫入失敗都吞掉。"""
+    try:
+        d = cache_dir()
+        fd, tmp = tempfile.mkstemp(dir=d, prefix="health.", suffix=".tmp")
+        try:
+            with os.fdopen(fd, "w", encoding="utf-8") as f:
+                json.dump(h, f)
+            os.replace(tmp, _health_path())
+        except BaseException:
+            try:
+                os.unlink(tmp)
+            except OSError:
+                pass
+            raise
+    except Exception:
+        pass
+
+
+def probe(url):
+    timeout = float(os.environ.get("JEV_PROBE_TIMEOUT", "0.5"))
+    try:
+        status, data = http_json("GET", url + "/api/version", timeout=timeout)
+        return status == 200, (data or {}).get("version")
+    except Exception:
+        return False, None
+
+
+def _rec(health, url):
+    r = health.get(url)
+    if not isinstance(r, dict):
+        r = health[url] = {"ok": False, "ts": 0}
+    return r
+
+
+def endpoint_healthy(ep, health, force=False):
+    now = time.time()
+    rec = health.get(ep["url"])
+    if isinstance(rec, dict) and not force:
+        ttl = HEALTH_TTL_OK if rec.get("ok") else HEALTH_TTL_FAIL
+        if now - rec.get("ts", 0) < ttl:
+            return bool(rec.get("ok", False))
+    ok, version = probe(ep["url"])
+    new = {"ok": ok, "ts": now, "version": version}
+    for keep in ("missing_models", "digests"):
+        if isinstance(rec, dict) and rec.get(keep):
+            new[keep] = rec[keep]
+    health[ep["url"]] = new
+    write_health(health)
+    return ok
+
+
+# ── 模型版本釘選 ──────────────────────────────────────────────────────
+
+def _norm_digest(d):
+    return str(d).strip().lower().split(":")[-1]  # 去掉 "sha256:" 前綴
+
+
+def _same_model(a, b):
+    a, b = str(a or ""), str(b or "")
+    return a == b or a + ":latest" == b or a == b + ":latest"
+
+
+def pinned_digest(cfg, model):
+    """這次要用的模型有釘版本就回傳釘選前綴，否則 None。"""
+    pin = cfg.get("_pin")
+    if isinstance(pin, dict) and pin.get("digest") and _same_model(pin.get("model"), model):
+        return pin["digest"]
+    return None
+
+
+def fetch_model_digest(url, model, timeout=3.0):
+    """從 /api/tags 找該模型。回傳 (是否列出, digest)；有列出但沒有 digest 欄位時 digest=None。"""
+    _, tags = http_json("GET", url + "/api/tags", timeout=timeout)
+    for m in (tags or {}).get("models", []) or []:
+        if isinstance(m, dict) and (_same_model(m.get("name"), model)
+                                    or _same_model(m.get("model"), model)):
+            return True, m.get("digest") or None
+    return False, None
+
+
+def digest_problem(ep, model, pin, health):
+    """回傳 None＝版本符合（或有列出模型但沒有 digest 欄位而不檢查）；否則回傳不可用原因。
+
+    有釘版本時，/api/tags 沒列出該模型＝模型不在這台，視為不可用（不放行去 POST）。
+    結果納入健康快取：符合 10 分鐘、不可用 60 秒。
+    """
+    rec = _rec(health, ep["url"])
+    cache = rec.get("digests") if isinstance(rec.get("digests"), dict) else {}
+    hit = cache.get(model)
+    now = time.time()
+    if isinstance(hit, dict) and hit.get("pin") == pin:
+        ttl = DIGEST_TTL_OK if not hit.get("reason") else HEALTH_TTL_FAIL
+        if now - hit.get("ts", 0) < ttl:
+            return hit.get("reason")
+    listed, digest, reason = False, None, None
+    try:
+        listed, digest = fetch_model_digest(ep["url"], model)
+        if not listed:
+            reason = "%s 上沒有模型 %s（/api/tags 未列出）" % (ep["name"], model)
+    except Exception as e:  # noqa: 任何失敗都視為無法確認版本
+        reason = "%s 無法確認模型版本（/api/tags 失敗：%s）" % (ep["name"], e)
+    if digest and not _norm_digest(digest).startswith(pin):
+        reason = "%s 上的模型版本與釘選的 %s 不符（實際 %s）" % (ep["name"], pin,
+                                                         _norm_digest(digest)[:12])
+    cache[model] = {"pin": pin, "digest": digest, "reason": reason, "ts": now}
+    rec["digests"] = cache
+    write_health(health)
+    return reason
+
+
+def try_autostart(ep):
+    """只對本機 endpoint：背景啟動 ollama serve，最多等 JEV_AUTOSTART_WAIT（預設 20）秒。"""
+    host = urllib.parse.urlparse(ep["url"]).hostname
+    if not ep.get("autostart") or host not in LOCAL_HOSTS:
+        return False
+    exe = shutil.which("ollama")
+    if not exe:
+        return False
+    try:
+        log = open(os.path.join(cache_dir(), "ollama.log"), "ab")
+    except OSError:
+        log = subprocess.DEVNULL
+    env = dict(os.environ)
+    port = urllib.parse.urlparse(ep["url"]).port or 11434
+    env.setdefault("OLLAMA_HOST", "127.0.0.1:%d" % port)
+    subprocess.Popen([exe, "serve"], stdout=log, stderr=log, stdin=subprocess.DEVNULL,
+                     env=env, start_new_session=True)
+    deadline = time.time() + float(os.environ.get("JEV_AUTOSTART_WAIT", "20"))
+    while time.time() < deadline:
+        if probe(ep["url"])[0]:
+            return True
+        time.sleep(0.2)
+    return False
+
+
+# ── 請求驗證 ──────────────────────────────────────────────────────────
+
+def validate(req, local):
+    if not isinstance(req, dict):
+        raise JevError("request 必須是 JSON object", EXIT_BAD_REQUEST)
+    if "state" not in req:
+        raise JevError("request 缺少 state", EXIT_BAD_REQUEST)
+    qs = req.get("questions")
+    if not isinstance(qs, dict) or not qs:
+        raise JevError("request 需要非空的 questions（map）", EXIT_BAD_REQUEST)
+    if len(qs) > MAX_QUESTIONS:
+        raise JevError("一次最多 %d 題，收到 %d 題" % (MAX_QUESTIONS, len(qs)), EXIT_BAD_REQUEST)
+    for qid, q in qs.items():
+        t = q.get("type") if isinstance(q, dict) else None
+        if t not in ("noul", "choice", "score"):
+            raise JevError("題目 %s 的 type 必須是 noul／choice／score" % qid, EXIT_BAD_REQUEST)
+        if "instructions" not in q:
+            raise JevError("題目 %s 缺少 instructions" % qid, EXIT_BAD_REQUEST)
+        if t in ("choice", "score"):
+            crit = q.get("criteria")
+            if t == "choice" and not isinstance(crit, dict):
+                raise JevError("choice 題 %s 的 criteria 必須是 map" % qid, EXIT_BAD_REQUEST)
+            if t == "score" and not isinstance(crit, list):
+                raise JevError("score 題 %s 的 criteria 必須是陣列" % qid, EXIT_BAD_REQUEST)
+            n = len(crit)
+            hi = MAX_OPTIONS if local else (255 if t == "choice" else 10)
+            if n < MIN_OPTIONS or n > hi:
+                hint = "；請拆成多題或減少選項" if local and n > MAX_OPTIONS else ""
+                raise JevError("題目 %s 有 %d 個選項，%s 後端允許 %d–%d 個%s"
+                               % (qid, n, "本地" if local else "官方", MIN_OPTIONS, hi, hint),
+                               EXIT_BAD_REQUEST)
+
+
+# ── 用量與上限 ────────────────────────────────────────────────────────
+
+def usage_path():
+    return os.path.join(cache_dir(), "usage.jsonl")
+
+
+def _append_row(row):
+    with open(usage_path(), "a", encoding="utf-8") as f:
+        f.write(json.dumps(row) + "\n")
+
+
+def log_usage(backend, endpoint, model, usage):
+    usage = usage if isinstance(usage, dict) else {}
+    _append_row({"ts": time.time(), "backend": backend, "endpoint": endpoint, "model": model,
+                 "input_tokens": usage.get("input_tokens", 0),
+                 "output_tokens": usage.get("output_tokens", 0)})
+
+
+def today_tokens(backend):
+    start = time.mktime(time.localtime()[:3] + (0, 0, 0, 0, 0, -1))
+    total = 0
+    by_rid = {}  # rid → {"reserve": (ts, n), "settle": (ts, n)}
+    try:
+        with open(usage_path(), encoding="utf-8") as f:
+            for line in f:
+                try:
+                    r = json.loads(line)
+                    if not isinstance(r, dict) or r.get("backend") != backend:
+                        continue
+                    ts = float(r.get("ts", 0))
+                    n = int(r.get("input_tokens") or 0)
+                except (ValueError, TypeError):
+                    continue
+                rid = r.get("rid")
+                if rid is None:
+                    if ts >= start:
+                        total += n
+                elif r.get("kind") in ("reserve", "settle"):
+                    by_rid.setdefault(str(rid), {})[r["kind"]] = (ts, n)
+    except OSError:
+        pass
+    for rec in by_rid.values():
+        ts = (rec.get("reserve") or rec.get("settle"))[0]
+        if ts >= start:
+            total += (rec.get("settle") or rec.get("reserve"))[1]
+    return total
+
+
+def reserve_usage(cap, need):
+    """在檔案鎖內檢查上限並預留本次估計；回傳 rid。無法預留＝拒絕送出。"""
+    if cap <= 0:
+        raise JevError("每日官方 API 用量上限為 %d（≤0 一律不送出）；請調高 "
+                       "daily_input_token_cap／JEV_DAILY_INPUT_TOKEN_CAP" % cap, EXIT_CAP)
+    try:
+        fd = os.open(os.path.join(cache_dir(), "usage.lock"), os.O_RDWR | os.O_CREAT, 0o600)
+    except OSError as e:
+        raise JevError("無法開啟用量鎖，為避免超支不送出：%s" % e, EXIT_CAP)
+    try:
+        fcntl.flock(fd, fcntl.LOCK_EX)
+        used = today_tokens("typesafe")
+        if used + need > cap:
+            raise JevError("今日官方 API 用量 %d＋本次估計 %d 會超過上限 %d tokens，已拒絕送出"
+                           "（調整 JEV_DAILY_INPUT_TOKEN_CAP）" % (used, need, cap), EXIT_CAP)
+        rid = uuid.uuid4().hex
+        try:
+            _append_row({"ts": time.time(), "backend": "typesafe", "kind": "reserve",
+                         "rid": rid, "input_tokens": need})
+        except OSError as e:
+            raise JevError("無法寫入用量預留列，為避免超支不送出：%s" % e, EXIT_CAP)
+        return rid
+    finally:
+        os.close(fd)  # 關檔即放鎖
+
+
+def settle_usage(rid, usage):
+    """回應缺 usage 就不結算（保留估計值）；寫入失敗也保留估計值。"""
+    if not isinstance(usage, dict) or not isinstance(usage.get("input_tokens"), (int, float)):
+        return
+    try:
+        _append_row({"ts": time.time(), "backend": "typesafe", "kind": "settle", "rid": rid,
+                     "input_tokens": int(usage["input_tokens"]),
+                     "output_tokens": usage.get("output_tokens", 0)})
+    except OSError:
+        pass
+
+
+def _tok(s):
+    non_ascii = sum(1 for c in s if ord(c) > 127)
+    return non_ascii + (len(s) - non_ascii + 2) // 3
+
+
+def estimate_tokens(req):
+    # 保守粗估：非 ASCII 每字 1 token、ASCII 每 3 字元 1 token；官方每題都會重讀 state，
+    # 所以 state 乘上題數；每題再加 50 的 overhead
+    nq = max(1, len(req.get("questions") or {}))
+    state = json.dumps(req.get("state"), ensure_ascii=False)
+    qs = json.dumps(req.get("questions"), ensure_ascii=False)
+    return _tok(state) * nq + _tok(qs) + 50 * nq
+
+
+def read_typesafe_key():
+    if os.environ.get("TYPESAFE_API_KEY"):
+        return os.environ["TYPESAFE_API_KEY"]
+    path = os.environ.get("JEV_TYPESAFE_ENV_FILE") or os.path.join(os.path.expanduser("~"),
+                                                                      ".typesafe_env")
+    try:
+        with open(path, encoding="utf-8") as f:
+            for line in f:
+                k, _, v = line.strip().partition("=")
+                if k.replace("export ", "").strip() == "TYPESAFE_API_KEY" and v:
+                    return v.strip().strip('"').strip("'")
+    except OSError:
+        pass
+    return None
+
+
+# ── 後端 ─────────────────────────────────────────────────────────────
+
+_TOKEN_LIMIT_RE = re.compile(r"has (\d+) tokens; expected \d+\D(\d+)")
+
+
+def _client_error_message(ep, code, detail):
+    """4xx 的錯誤訊息；Ollama 回「輸入超過模型 context」時直接講清楚是請求太大。"""
+    text = detail.get("error") if isinstance(detail, dict) else None
+    m = _TOKEN_LIMIT_RE.search(text) if isinstance(text, str) else None
+    if m:
+        return ("請求太大（輸入 %s tokens，模型上限 %s）；請縮短 state 或分批"
+                % (m.group(1), m.group(2)))
+    return "endpoint %s 拒絕這個請求（HTTP %d）；請依 detail 修正請求內容" % (ep["name"], code)
+
+
+def _try_post(ep, body, health):
+    """對單一 endpoint 送一次；成功回 data，該換下一台回 None。
+
+    404＝模型不在這台（記下、換下一台）；408／429＝暫時性錯誤，換下一台；
+    其他 4xx＝請求本身有問題，直接丟錯（exit 2），不把主機標成故障、不換主機、不 autostart。
+    5xx／連線失敗／逾時／408＝主機故障 60 秒，換下一台。
+    """
+    model = str(body["model"])
+    rec = _rec(health, ep["url"])
+    ts = (rec.get("missing_models") or {}).get(model)
+    if isinstance(ts, (int, float)) and time.time() - ts < HEALTH_TTL_FAIL:
+        return None  # 這個模型剛確認不在這台
+    timeout = post_timeout()
+    try:
+        _, data = http_json("POST", ep["url"] + "/v1/systemone", body, timeout=timeout)
+    except urllib.error.HTTPError as e:
+        detail = http_error_body(e)
+        if e.code == 404:  # 模型不在這台：記下，60 秒內不再打
+            rec.setdefault("missing_models", {})
+            if not isinstance(rec["missing_models"], dict):
+                rec["missing_models"] = {}
+            rec["missing_models"][model] = time.time()
+        elif e.code == 429:
+            # 暫時太忙：只跳過這一次、不寫健康快取。429 回得很快，下次再試它的代價小，
+            # 若標故障 60 秒會讓所有請求白白改走較慢的 Mac。
+            return None
+        elif e.code == 408:  # 主機端逾時：同「連線逾時」，標故障 60 秒
+            rec["ok"], rec["ts"] = False, time.time()
+        elif 400 <= e.code < 500:
+            raise JevError(_client_error_message(ep, e.code, detail), EXIT_BAD_REQUEST, detail)
+        else:
+            rec["ok"], rec["ts"] = False, time.time()
+        write_health(health)
+        return None
+    except (urllib.error.URLError, OSError, ValueError):  # 含逾時（socket.timeout 是 OSError）
+        rec["ok"], rec["ts"] = False, time.time()
+        write_health(health)
+        return None
+    if not isinstance(data, dict):
+        return None
+    data["served_by"] = ep["name"]
+    try:
+        log_usage("local", ep["name"], body["model"], data.get("usage"))
+    except OSError:
+        pass
+    return data
+
+
+def _may_autostart(ep, health):
+    host = urllib.parse.urlparse(ep["url"]).hostname
+    if not ep.get("autostart") or host not in LOCAL_HOSTS or ep["url"] in _AUTOSTARTED:
+        return False
+    failed = _rec(health, ep["url"]).get("autostart_failed")
+    return not (isinstance(failed, (int, float)) and time.time() - failed < HEALTH_TTL_FAIL)
+
+
+def local_body(req, cfg):
+    body = dict(req)
+    if not body.get("model") or str(body["model"]).startswith("jev"):
+        body["model"] = cfg["model"]
+    return body
+
+
+def typesafe_body(req, cfg):
+    body = dict(req)
+    if not str(body.get("model") or "").startswith("jev"):
+        body["model"] = cfg["typesafe"].get("model", "jev-latest")
+    return body
+
+
+def _usable(ep, body, pin, health, reasons):
+    """送 POST 前的版本檢查；不符就記原因、回 False。"""
+    if not pin:
+        return True
+    why = digest_problem(ep, str(body["model"]), pin, health)
+    if why:
+        reasons.append(why)
+        return False
+    return True
+
+
+def ask_local(req, cfg, endpoints):
+    body = local_body(req, cfg)
+    encode_body(body)  # 太大就在連線前 exit 2
+    pin = pinned_digest(cfg, body["model"])
+    health = read_health()
+    tried, down, reasons = [], [], []
+    for ep in endpoints:
+        tried.append(ep["name"])
+        if not endpoint_healthy(ep, health):
+            down.append(ep)  # 只有「連不上」的才有資格 autostart
+            continue
+        if not _usable(ep, body, pin, health, reasons):
+            continue
+        data = _try_post(ep, body, health)
+        if data is not None:
+            return data
+    # 全部沒答成：對連不上的本機 endpoint 各最多 autostart 一次（不遞迴，成功後直接送 POST）
+    for ep in down:
+        if not _may_autostart(ep, health):
+            continue
+        _AUTOSTARTED.add(ep["url"])
+        if try_autostart(ep):
+            health[ep["url"]] = {"ok": True, "ts": time.time()}
+            write_health(health)
+            if not _usable(ep, body, pin, health, reasons):
+                continue
+            data = _try_post(ep, body, health)
+            if data is not None:
+                return data
+        else:
+            health[ep["url"]] = {"ok": False, "ts": time.time(), "autostart_failed": time.time()}
+            write_health(health)
+    # 給 agent 看的訊息：只建議診斷、交用戶處理，不叫 agent 自己下載或更換模型
+    msg = "沒有可用的 endpoint（試過：%s）。" % "、".join(tried)
+    if reasons:
+        msg += "；".join(reasons) + "。"
+    msg += ("請執行 `jev doctor` 查看各主機狀態，並把結果交給用戶或管理者處理"
+            "（例如啟動 Ollama、確認模型與版本）；不要自行下載、更新或更換模型。")
+    raise JevError(msg)
+
+
+def ask_typesafe(req, cfg):
+    body = typesafe_body(req, cfg)
+    encode_body(body)  # 太大就在預留用量與連線前 exit 2
+    key = read_typesafe_key()
+    if not key:
+        raise JevError("backend=typesafe 需要 TYPESAFE_API_KEY（環境變數或 ~/.typesafe_env）。"
+                       "這個後端會花錢；收 key 請用 read -s SOP，不要貼進對話。", EXIT_NO_KEY)
+    ts = cfg["typesafe"]
+    cap = int(ts.get("daily_input_token_cap", 0))
+    rid = reserve_usage(cap, estimate_tokens(req))  # 預留→送出→結算；失敗不結算（保守）
+    url = ts["base_url"].rstrip("/") + "/v1/systemone"
+    try:
+        _, data = http_json("POST", url, body, headers={"Authorization": "Bearer " + key},
+                            timeout=post_timeout())
+    except urllib.error.HTTPError as e:
+        code = EXIT_BAD_REQUEST if e.code in (400, 422) else EXIT_ERR
+        raise JevError("官方 API 回 HTTP %d" % e.code, code, http_error_body(e))
+    except (urllib.error.URLError, OSError) as e:
+        raise JevError("連不到官方 API：%s" % e)
+    except ValueError as e:
+        raise JevError("官方 API 回應不是有效 JSON：%s" % e)
+    if not isinstance(data, dict):
+        raise JevError("官方 API 回應格式不對")
+    settle_usage(rid, data.get("usage"))
+    data["served_by"] = "typesafe"
+    return data
+
+
+def run_request(req, args, cfg):
+    backend = args.backend or "local"
+    if backend not in ("local", "typesafe"):
+        raise JevError("未知的 backend：%s" % backend, EXIT_BAD_REQUEST)
+    validate(req, local=(backend == "local"))
+    endpoints = parse_endpoints(",".join(args.endpoint)) if args.endpoint else cfg["endpoints"]
+    if args.model:
+        req = dict(req, model=args.model)
+    if args.dry_run:
+        body = typesafe_body(req, cfg) if backend == "typesafe" else local_body(req, cfg)
+        return {"dry_run": True, "backend": backend,
+                "endpoints": [e["name"] + "=" + e["url"] for e in endpoints] if backend == "local"
+                else [cfg["typesafe"]["base_url"]],
+                "body_bytes": len(encode_body(body)),  # 超過上限會直接 exit 2
+                "request": req}
+    if backend == "typesafe":
+        return ask_typesafe(req, cfg)
+    return ask_local(req, cfg, endpoints)
+
+
+# ── 子指令 ────────────────────────────────────────────────────────────
+
+def read_request_arg(value, path, stdin):
+    if path:
+        with open(path, encoding="utf-8") as f:
+            return json.load(f)
+    if value in (None, "-"):
+        return json.load(stdin or sys.stdin)
+    return json.loads(value)
+
+
+def cmd_doctor(args, cfg):
+    endpoints = parse_endpoints(",".join(args.endpoint)) if args.endpoint else cfg["endpoints"]
+    pin = pinned_digest(cfg, cfg["model"])
+    out = {"model": cfg["model"], "model_digest": pin, "endpoints": []}
+    for ep in endpoints:
+        ok, version = probe(ep["url"])
+        row = {"name": ep["name"], "url": ep["url"], "reachable": ok, "version": version}
+        if ok:
+            try:
+                _, tags = http_json("GET", ep["url"] + "/api/tags", timeout=3)
+                entry = next((m for m in (tags or {}).get("models", []) or []
+                              if isinstance(m, dict) and (_same_model(m.get("name"), cfg["model"])
+                                                          or _same_model(m.get("model"), cfg["model"]))),
+                             None)
+                row["model_present"] = entry is not None
+                digest = _norm_digest(entry["digest"]) if entry and entry.get("digest") else None
+                row["digest"] = digest[:12] if digest else None
+                row["digest_match"] = digest.startswith(pin) if (digest and pin) else None
+            except Exception:
+                row["model_present"] = None
+        out["endpoints"].append(row)
+    key = read_typesafe_key()
+    out["typesafe"] = {"key": (key[:8] + "…") if key else None,
+                       "daily_input_token_cap": cfg["typesafe"]["daily_input_token_cap"],
+                       "used_today": today_tokens("typesafe")}
+    out["local_tokens_today"] = today_tokens("local")
+    return out
+
+
+def predicted_confidence(ans):
+    t = ans.get("type")
+    if t == "noul":
+        p = float(ans.get("noul", 0.5))
+        return max(p, 1 - p)
+    probs = ans.get("probabilities") or {}
+    return max(probs.values()) if probs else 0.0
+
+
+def is_correct(item, ans):
+    t = item["type"]
+    if t == "noul":
+        return (float(ans.get("noul", 0)) >= 0.5) == bool(item["expected"])
+    if t == "choice":
+        return ans.get("choice") == item["expected"]
+    probs = ans.get("probabilities") or {}
+    if probs:
+        best = max(probs.items(), key=lambda kv: kv[1])[0]
+        return int(best) == int(item["expected"])
+    return round(float(ans.get("score", -1))) == int(item["expected"])
+
+
+def ece(pairs, bins=10):
+    if not pairs:
+        return None
+    total = 0.0
+    for b in range(bins):
+        lo, hi = b / bins, (b + 1) / bins
+        sel = [(c, ok) for c, ok in pairs if (lo < c <= hi) or (b == 0 and c == 0)]
+        if sel:
+            conf = sum(c for c, _ in sel) / len(sel)
+            acc = sum(1 for _, ok in sel if ok) / len(sel)
+            total += len(sel) / len(pairs) * abs(conf - acc)
+    return round(total, 4)
+
+
+def percentile(xs, q):
+    if not xs:
+        return None
+    xs = sorted(xs)
+    k = (len(xs) - 1) * q
+    f, c = math.floor(k), math.ceil(k)
+    return xs[int(k)] if f == c else xs[f] + (xs[c] - xs[f]) * (k - f)
+
+
+def cmd_eval(args, cfg):
+    path = args.file or os.path.join(SKILL_DIR, "evals", "labeled.jsonl")
+    with open(path, encoding="utf-8") as f:
+        items = [json.loads(l) for l in f if l.strip() and not l.lstrip().startswith("//")]
+    pairs, lat, by_type, served, failures, misses = [], [], {}, {}, [], []
+    for it in items:
+        q = {"type": it["type"], "instructions": it["instructions"]}
+        if "criteria" in it:
+            q["criteria"] = it["criteria"]
+        req = {"state": it["state"], "questions": {"q": q}}
+        t0 = time.time()
+        try:
+            data = run_request(req, args, cfg)
+        except JevError as e:
+            failures.append({"id": it.get("id"), "error": str(e)})
+            continue
+        lat.append((time.time() - t0) * 1000)
+        ans = data["answers"]["q"]
+        ok = is_correct(it, ans)
+        pairs.append((predicted_confidence(ans), ok))
+        if not ok:
+            got = {k: ans.get(k) for k in ("noul", "choice", "score", "probabilities") if k in ans}
+            misses.append({"id": it.get("id"), "expected": it["expected"], "got": got})
+        s = by_type.setdefault(it["type"], [0, 0])
+        s[0] += 1 if ok else 0
+        s[1] += 1
+        served[data.get("served_by")] = served.get(data.get("served_by"), 0) + 1
+    correct = sum(1 for _, ok in pairs if ok)
+    return {"file": path, "model": args.model or cfg["model"], "n": len(items),
+            "answered": len(pairs), "correct": correct,
+            "accuracy": round(correct / len(pairs), 4) if pairs else None,
+            "by_type": {k: {"correct": v[0], "n": v[1], "accuracy": round(v[0] / v[1], 4)}
+                        for k, v in by_type.items()},
+            "ece": ece(pairs),
+            "latency_ms_p50": round(percentile(lat, 0.5), 1) if lat else None,
+            "latency_ms_p95": round(percentile(lat, 0.95), 1) if lat else None,
+            "served_by": served, "misses": misses, "failures": failures}
+
+
+class JsonArgumentParser(argparse.ArgumentParser):
+    def error(self, message):
+        print(json.dumps({"error": message}, ensure_ascii=False, indent=2))
+        raise SystemExit(EXIT_BAD_REQUEST)
+
+
+def _global_options(suppress):
+    """全域選項；子指令版預設 SUPPRESS，才不會蓋掉放在子指令前的值。"""
+    g = JsonArgumentParser(add_help=False)
+    d = argparse.SUPPRESS if suppress else None
+    g.add_argument("--backend", choices=["local", "typesafe"], default=d,
+                   help="預設 local；typesafe 會花錢")
+    g.add_argument("--endpoint", action="append", default=d,
+                   help="覆寫 endpoint，可重複；格式 name=url 或 url")
+    g.add_argument("--model", default=d, help="覆寫模型（local 預設看 config.json）")
+    g.add_argument("--dry-run", action="store_true", default=argparse.SUPPRESS if suppress else False,
+                   help="只印出要送的請求，不連任何網路")
+    return g
+
+
+def build_parser():
+    p = JsonArgumentParser(prog="jev", description="Jev 相容判斷 CLI（預設本地 Ollama，0 元）",
+                           parents=[_global_options(False)])
+    gp = _global_options(True)
+    sub = p.add_subparsers(dest="cmd")
+    a = sub.add_parser("ask", help="送完整 Jev request JSON", parents=[gp])
+    a.add_argument("json", nargs="?", help="request JSON；'-' 或省略＝從 stdin 讀")
+    a.add_argument("-f", "--file", help="從檔案讀 request JSON")
+    n = sub.add_parser("noul", help="是非題：jev noul STATE QUESTION", parents=[gp])
+    n.add_argument("state")
+    n.add_argument("question")
+    c = sub.add_parser("choice", help="多選一：jev choice STATE QUESTION OPT OPT…", parents=[gp])
+    c.add_argument("state")
+    c.add_argument("question")
+    c.add_argument("options", nargs="+")
+    s = sub.add_parser("score", help="刻度：jev score STATE QUESTION LOW … HIGH", parents=[gp])
+    s.add_argument("state")
+    s.add_argument("question")
+    s.add_argument("levels", nargs="+")
+    sub.add_parser("doctor", help="檢查 endpoint、模型、key、今日用量", parents=[gp])
+    e = sub.add_parser("eval", help="跑標註測試集，輸出準確率／ECE／延遲", parents=[gp])
+    e.add_argument("file", nargs="?")
+    return p
+
+
+def main(argv=None, stdin=None):
+    _AUTOSTARTED.clear()
+    try:
+        args = build_parser().parse_args(argv)
+    except SystemExit as e:
+        return e.code if isinstance(e.code, int) else EXIT_OK
+    try:
+        cfg = load_config()
+        if args.cmd == "ask":
+            result = run_request(read_request_arg(args.json, args.file, stdin), args, cfg)
+        elif args.cmd == "noul":
+            result = run_request({"state": args.state, "questions": {
+                "answer": {"type": "noul", "instructions": args.question}}}, args, cfg)
+        elif args.cmd == "choice":
+            dups = list(dict.fromkeys(o for i, o in enumerate(args.options)
+                                      if o in args.options[:i]))
+            if dups:
+                raise JevError("choice 選項重複：%s；每個選項只能出現一次（不會自動合併）"
+                               % "、".join(dups), EXIT_BAD_REQUEST)
+            result = run_request({"state": args.state, "questions": {
+                "answer": {"type": "choice", "instructions": args.question,
+                           "criteria": {o: None for o in args.options}}}}, args, cfg)
+        elif args.cmd == "score":
+            result = run_request({"state": args.state, "questions": {
+                "answer": {"type": "score", "instructions": args.question,
+                           "criteria": list(args.levels)}}}, args, cfg)
+        elif args.cmd == "doctor":
+            result = cmd_doctor(args, cfg)
+        elif args.cmd == "eval":
+            result = cmd_eval(args, cfg)
+        else:
+            build_parser().print_help()
+            return EXIT_BAD_REQUEST
+    except JevError as e:
+        out = {"error": str(e)}
+        if e.detail is not None:
+            out["detail"] = e.detail
+        print(json.dumps(out, ensure_ascii=False, indent=2))
+        return e.code
+    except (ValueError, OSError) as e:
+        print(json.dumps({"error": "輸入或檔案錯誤：%s" % e}, ensure_ascii=False, indent=2))
+        return EXIT_BAD_REQUEST
+    print(json.dumps(result, ensure_ascii=False, indent=2))
+    return EXIT_OK
+
+
+if __name__ == "__main__":
+    sys.exit(main())

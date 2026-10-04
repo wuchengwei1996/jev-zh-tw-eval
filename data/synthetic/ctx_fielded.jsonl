@@ -1,0 +1,11 @@
+// refuter-4：同 10 題，state＝{message, 背景欄位}，題目用反引號指 `message`（SKILL.md 出題要訣 3 的寫法）
+{"id": "c1", "type": "noul", "state": {"message": "好的收到，謝謝", "history": "顧客上週來信要求退款，已退款完成"}, "instructions": "`message` 是否要求退款？", "expected": false}
+{"id": "c2", "type": "noul", "state": {"message": "我要退款，商品有瑕疵", "history": "顧客之前詢問營業時間"}, "instructions": "`message` 是否要求退款？", "expected": true}
+{"id": "c3", "type": "choice", "state": {"message": "請問下週二的清潔班表可以把我從早班調到晚班嗎？", "note": "上週寶寶發燒已由護理站處理完畢"}, "instructions": "`message` 該分派給哪個團隊？", "expected": "營運排班", "criteria": {"帳務退款": "付款、發票、退費、退款", "門市物流": "出貨、配送、換貨", "護理照護": "產婦與新生兒的健康、醫療、照護", "營運排班": "員工班表、清潔排班、人力調度"}}
+{"id": "c4", "type": "score", "state": {"message": "寶寶吐奶後臉色發紫，快來！", "note": "家屬先前詢問下週清潔排班"}, "instructions": "`message` 有多急？", "expected": 2, "criteria": ["可以等", "今天內處理", "立刻處理"]}
+{"id": "c5", "type": "noul", "state": {"message": "已經收到退款了，謝謝你們", "history": "顧客三天前很生氣要求退款"}, "instructions": "`message` 是否要求退款？", "expected": false}
+{"id": "c6", "type": "noul", "state": {"message": "訂單還沒到，可以幫我查一下嗎？", "plan": "VIP 會員，過去曾三度要求退款"}, "instructions": "`message` 是否要求退款？", "expected": false}
+{"id": "c7", "type": "noul", "state": {"message": "東西很好用，下次還會再買", "history": "上次投訴出貨太慢並要求退費"}, "instructions": "`message` 是否為投訴？", "expected": false}
+{"id": "c8", "type": "noul", "state": {"message": "這次又延遲，我要你們退錢", "history": "顧客一直很滿意，常給五星好評"}, "instructions": "`message` 是否要求退款？", "expected": true}
+{"id": "c9", "type": "score", "state": {"message": "幫我把下週三的早班改到晚班", "note": "寶寶昨晚發燒 39 度，已送醫"}, "instructions": "`message` 有多急？", "expected": 0, "criteria": ["可以等", "今天內處理", "立刻處理"]}
+{"id": "c10", "type": "choice", "state": {"message": "請問可以開統編發票嗎？", "history": "上次寶寶黃疸由護理站追蹤"}, "instructions": "`message` 該分派給哪個團隊？", "expected": "帳務退款", "criteria": {"帳務退款": "付款、發票、退費、退款", "門市物流": "出貨、配送、換貨", "護理照護": "產婦與新生兒的健康、醫療、照護", "營運排班": "員工班表、清潔排班、人力調度"}}

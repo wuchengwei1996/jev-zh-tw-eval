@@ -1,0 +1,25 @@
+// refuter-2 第三輪泛化探針（24 題）：標準答案在跑模型前寫定。合成資料。
+{"id": "p01", "type": "noul", "state": "我姐姐上次在你們那邊退費，等了兩個月才拿到錢，所以我想先確認你們的付款方式。", "instructions": "顧客是否要求退款（要店家把錢還給他）？", "expected": false, "tags": "mention"}
+{"id": "p02", "type": "noul", "state": "新聞說有月子中心倒閉，顧客都拿不回訂金，你們應該不會這樣吧？", "instructions": "顧客是否要求退款（要店家把錢還給他）？", "expected": false, "tags": "mention"}
+{"id": "p03", "type": "noul", "state": "請問你們的退費政策是什麼？我還在比較幾家，還沒決定要不要訂。", "instructions": "顧客是否要求退款（要店家把錢還給他）？", "expected": false, "tags": "mention"}
+{"id": "p04", "type": "noul", "state": "我同事說你們退款很快，所以我放心下訂了，想問可以用哪些方式付款。", "instructions": "顧客是否要求退款（要店家把錢還給他）？", "expected": false, "tags": "mention"}
+{"id": "p05", "type": "noul", "state": "客服說可以幫我退款，但我其實只想要換貨而已。", "instructions": "顧客是否要求退款（要店家把錢還給他）？", "expected": false, "tags": "mention"}
+{"id": "p06", "type": "noul", "state": "我婆婆一直叫我去要求退費，但我覺得你們其實做得不錯，所以就不用了。", "instructions": "顧客是否要求退款（要店家把錢還給他）？", "expected": false, "tags": "mention"}
+{"id": "p07", "type": "noul", "state": "聽說別人家都可以全額退訂金，你們家好像沒有？只是好奇問一下，我沒有要退。", "instructions": "顧客是否要求退款（要店家把錢還給他）？", "expected": false, "tags": "mention"}
+{"id": "p08", "type": "noul", "state": "網路上有人在爆料說要退款很難，我想幫你們澄清一下，我上次退款三天就入帳了。", "instructions": "顧客是否要求退款（要店家把錢還給他）？", "expected": false, "tags": "mention"}
+{"id": "p09", "type": "noul", "state": "寶寶提早出生住院，沒辦法入住了，訂金可以還給我們嗎？", "instructions": "顧客是否要求退款（要店家把錢還給他）？", "expected": true, "tags": "request"}
+{"id": "p10", "type": "noul", "state": "我姐姐幫我訂的房，現在用不到了，麻煩把訂金退回她的帳戶。", "instructions": "顧客是否要求退款（要店家把錢還給他）？", "expected": true, "tags": "request"}
+{"id": "p11", "type": "noul", "state": "東西跟描述不符，這筆錢我希望你們退給我。", "instructions": "顧客是否要求退款（要店家把錢還給他）？", "expected": true, "tags": "request"}
+{"id": "p12", "type": "noul", "state": "我不要換貨也不要折價券，請直接退款。", "instructions": "顧客是否要求退款（要店家把錢還給他）？", "expected": true, "tags": "request"}
+{"id": "p13", "type": "noul", "state": "整體還不錯，除了晚上隔壁嬰兒的哭聲聽得一清二楚以外 🙂", "instructions": "這則訊息是否在抱怨（對產品或服務表達不滿）？", "expected": true, "tags": "sarcasm"}
+{"id": "p14", "type": "noul", "state": "謝謝你們讓我體會到什麼叫做「等待的藝術」。", "instructions": "這則訊息是否在抱怨（對產品或服務表達不滿）？", "expected": true, "tags": "sarcasm"}
+{"id": "p15", "type": "noul", "state": "你們的停車場真的是考驗駕駛技術的好地方呢。", "instructions": "這則訊息是否在抱怨（對產品或服務表達不滿）？", "expected": true, "tags": "sarcasm"}
+{"id": "p16", "type": "noul", "state": "餐點很有創意，我第一次吃到冷掉的麻油雞。", "instructions": "這則訊息是否在抱怨（對產品或服務表達不滿）？", "expected": true, "tags": "sarcasm"}
+{"id": "p17", "type": "noul", "state": "房間很大很舒服，就是 Wi-Fi 跟沒有一樣。", "instructions": "這則訊息是否在抱怨（對產品或服務表達不滿）？", "expected": true, "tags": "sarcasm"}
+{"id": "p18", "type": "noul", "state": "護理師人都很好，只是叫了三次都沒人來而已啦。", "instructions": "這則訊息是否在抱怨（對產品或服務表達不滿）？", "expected": true, "tags": "sarcasm"}
+{"id": "p19", "type": "noul", "state": "價格是很高貴沒錯，服務嘛…就見仁見智了。", "instructions": "這則訊息是否在抱怨（對產品或服務表達不滿）？", "expected": true, "tags": "sarcasm"}
+{"id": "p20", "type": "noul", "state": "感謝貴中心的「用心」，寶寶的衣服洗完還附贈別人的口水巾。", "instructions": "這則訊息是否在抱怨（對產品或服務表達不滿）？", "expected": true, "tags": "sarcasm"}
+{"id": "p21", "type": "noul", "state": "整體很棒，連隔壁嬰兒的哭聲都聽不到，隔音做得超好 🙂", "instructions": "這則訊息是否在抱怨（對產品或服務表達不滿）？", "expected": false, "tags": "praise"}
+{"id": "p22", "type": "noul", "state": "謝謝你們這麼快就處理好，真的很感動。", "instructions": "這則訊息是否在抱怨（對產品或服務表達不滿）？", "expected": false, "tags": "praise"}
+{"id": "p23", "type": "noul", "state": "停車場很大很好停，家人來探望很方便。", "instructions": "這則訊息是否在抱怨（對產品或服務表達不滿）？", "expected": false, "tags": "praise"}
+{"id": "p24", "type": "noul", "state": "請問明天的點心是什麼？", "instructions": "這則訊息是否在抱怨（對產品或服務表達不滿）？", "expected": false, "tags": "neutral"}

@@ -1,0 +1,404 @@
+{
+  "len_thucnews_choice": {
+    "50": {
+      "n_items": 40,
+      "answered": 40,
+      "failed": 0,
+      "correct": 30,
+      "accuracy": 0.75,
+      "acc_ci95": [
+        0.598,
+        0.858
+      ],
+      "ece": 0.0852,
+      "mean_conf": 0.7774,
+      "highconf_n": 14,
+      "highconf_wrong": 1,
+      "highconf_wrong_over_all": 0.025,
+      "err_rate_when_conf_ge_0.9": 0.0714,
+      "latency_ms_p50": 263.4,
+      "latency_ms_p95": 3090.1,
+      "served_by": {
+        "gpu": 40
+      },
+      "latency_gpu_p50": 263.4,
+      "latency_gpu_p95": 3090.1,
+      "input_tokens_p50": 309.5,
+      "per_class_acc": {
+        "娛樂": "4/4",
+        "教育": "3/4",
+        "時尚": "4/4",
+        "時政": "4/4",
+        "社會": "3/4",
+        "科技": "3/4",
+        "股票": "0/4",
+        "財經": "2/4",
+        "遊戲": "3/4",
+        "體育": "4/4"
+      },
+      "top_confusions": [
+        [
+          "股票→財經",
+          3
+        ],
+        [
+          "財經→股票",
+          2
+        ],
+        [
+          "教育→財經",
+          1
+        ],
+        [
+          "遊戲→體育",
+          1
+        ],
+        [
+          "社會→時政",
+          1
+        ],
+        [
+          "股票→時政",
+          1
+        ],
+        [
+          "科技→社會",
+          1
+        ]
+      ],
+      "top2_acc": 0.9
+    },
+    "200": {
+      "n_items": 40,
+      "answered": 40,
+      "failed": 0,
+      "correct": 30,
+      "accuracy": 0.75,
+      "acc_ci95": [
+        0.598,
+        0.858
+      ],
+      "ece": 0.1059,
+      "mean_conf": 0.8162,
+      "highconf_n": 16,
+      "highconf_wrong": 0,
+      "highconf_wrong_over_all": 0.0,
+      "err_rate_when_conf_ge_0.9": 0.0,
+      "latency_ms_p50": 263.1,
+      "latency_ms_p95": 426.1,
+      "served_by": {
+        "gpu": 40
+      },
+      "latency_gpu_p50": 263.1,
+      "latency_gpu_p95": 426.1,
+      "input_tokens_p50": 399.0,
+      "per_class_acc": {
+        "娛樂": "4/4",
+        "教育": "3/4",
+        "時尚": "4/4",
+        "時政": "4/4",
+        "社會": "3/4",
+        "科技": "2/4",
+        "股票": "1/4",
+        "財經": "2/4",
+        "遊戲": "3/4",
+        "體育": "4/4"
+      },
+      "top_confusions": [
+        [
+          "股票→財經",
+          2
+        ],
+        [
+          "教育→財經",
+          1
+        ],
+        [
+          "財經→股票",
+          1
+        ],
+        [
+          "財經→社會",
+          1
+        ],
+        [
+          "遊戲→體育",
+          1
+        ],
+        [
+          "社會→時政",
+          1
+        ],
+        [
+          "股票→時政",
+          1
+        ],
+        [
+          "科技→時政",
+          1
+        ]
+      ],
+      "top2_acc": 0.875
+    },
+    "500": {
+      "n_items": 40,
+      "answered": 40,
+      "failed": 0,
+      "correct": 29,
+      "accuracy": 0.725,
+      "acc_ci95": [
+        0.572,
+        0.839
+      ],
+      "ece": 0.128,
+      "mean_conf": 0.8208,
+      "highconf_n": 15,
+      "highconf_wrong": 0,
+      "highconf_wrong_over_all": 0.0,
+      "err_rate_when_conf_ge_0.9": 0.0,
+      "latency_ms_p50": 292.6,
+      "latency_ms_p95": 3508.7,
+      "served_by": {
+        "gpu": 40
+      },
+      "latency_gpu_p50": 292.6,
+      "latency_gpu_p95": 3508.7,
+      "input_tokens_p50": 573.0,
+      "per_class_acc": {
+        "娛樂": "4/4",
+        "教育": "2/4",
+        "時尚": "4/4",
+        "時政": "4/4",
+        "社會": "3/4",
+        "科技": "2/4",
+        "股票": "2/4",
+        "財經": "1/4",
+        "遊戲": "3/4",
+        "體育": "4/4"
+      },
+      "top_confusions": [
+        [
+          "財經→股票",
+          2
+        ],
+        [
+          "教育→社會",
+          1
+        ],
+        [
+          "教育→財經",
+          1
+        ],
+        [
+          "財經→社會",
+          1
+        ],
+        [
+          "遊戲→體育",
+          1
+        ],
+        [
+          "社會→時政",
+          1
+        ],
+        [
+          "股票→財經",
+          1
+        ],
+        [
+          "股票→時政",
+          1
+        ]
+      ],
+      "top2_acc": 0.875
+    },
+    "1000": {
+      "n_items": 40,
+      "answered": 40,
+      "failed": 0,
+      "correct": 30,
+      "accuracy": 0.75,
+      "acc_ci95": [
+        0.598,
+        0.858
+      ],
+      "ece": 0.1543,
+      "mean_conf": 0.8483,
+      "highconf_n": 17,
+      "highconf_wrong": 0,
+      "highconf_wrong_over_all": 0.0,
+      "err_rate_when_conf_ge_0.9": 0.0,
+      "latency_ms_p50": 338.2,
+      "latency_ms_p95": 526.8,
+      "served_by": {
+        "gpu": 40
+      },
+      "latency_gpu_p50": 338.2,
+      "latency_gpu_p95": 526.8,
+      "input_tokens_p50": 872.0,
+      "per_class_acc": {
+        "娛樂": "4/4",
+        "教育": "3/4",
+        "時尚": "4/4",
+        "時政": "4/4",
+        "社會": "4/4",
+        "科技": "2/4",
+        "股票": "1/4",
+        "財經": "1/4",
+        "遊戲": "3/4",
+        "體育": "4/4"
+      },
+      "top_confusions": [
+        [
+          "財經→股票",
+          2
+        ],
+        [
+          "股票→財經",
+          2
+        ],
+        [
+          "教育→財經",
+          1
+        ],
+        [
+          "財經→社會",
+          1
+        ],
+        [
+          "遊戲→體育",
+          1
+        ],
+        [
+          "股票→時政",
+          1
+        ],
+        [
+          "科技→時政",
+          1
+        ],
+        [
+          "科技→社會",
+          1
+        ]
+      ],
+      "top2_acc": 0.85
+    },
+    "2000": {
+      "n_items": 40,
+      "answered": 40,
+      "failed": 0,
+      "correct": 33,
+      "accuracy": 0.825,
+      "acc_ci95": [
+        0.68,
+        0.913
+      ],
+      "ece": 0.1084,
+      "mean_conf": 0.8474,
+      "highconf_n": 19,
+      "highconf_wrong": 0,
+      "highconf_wrong_over_all": 0.0,
+      "err_rate_when_conf_ge_0.9": 0.0,
+      "latency_ms_p50": 476.4,
+      "latency_ms_p95": 1231.6,
+      "served_by": {
+        "gpu": 40
+      },
+      "latency_gpu_p50": 476.4,
+      "latency_gpu_p95": 1231.6,
+      "input_tokens_p50": 1455.0,
+      "per_class_acc": {
+        "娛樂": "4/4",
+        "教育": "3/4",
+        "時尚": "4/4",
+        "時政": "4/4",
+        "社會": "4/4",
+        "科技": "4/4",
+        "股票": "1/4",
+        "財經": "1/4",
+        "遊戲": "4/4",
+        "體育": "4/4"
+      },
+      "top_confusions": [
+        [
+          "股票→財經",
+          3
+        ],
+        [
+          "財經→股票",
+          2
+        ],
+        [
+          "教育→財經",
+          1
+        ],
+        [
+          "財經→社會",
+          1
+        ]
+      ],
+      "top2_acc": 0.9
+    },
+    "4000": {
+      "n_items": 40,
+      "answered": 40,
+      "failed": 0,
+      "correct": 31,
+      "accuracy": 0.775,
+      "acc_ci95": [
+        0.625,
+        0.877
+      ],
+      "ece": 0.178,
+      "mean_conf": 0.8604,
+      "highconf_n": 20,
+      "highconf_wrong": 0,
+      "highconf_wrong_over_all": 0.0,
+      "err_rate_when_conf_ge_0.9": 0.0,
+      "latency_ms_p50": 603.0,
+      "latency_ms_p95": 1983.7,
+      "served_by": {
+        "gpu": 40
+      },
+      "latency_gpu_p50": 603.0,
+      "latency_gpu_p95": 1983.7,
+      "input_tokens_p50": 2675.5,
+      "per_class_acc": {
+        "娛樂": "4/4",
+        "教育": "3/4",
+        "時尚": "4/4",
+        "時政": "4/4",
+        "社會": "4/4",
+        "科技": "4/4",
+        "股票": "1/4",
+        "財經": "0/4",
+        "遊戲": "3/4",
+        "體育": "4/4"
+      },
+      "top_confusions": [
+        [
+          "財經→股票",
+          3
+        ],
+        [
+          "股票→財經",
+          3
+        ],
+        [
+          "教育→財經",
+          1
+        ],
+        [
+          "財經→社會",
+          1
+        ],
+        [
+          "遊戲→體育",
+          1
+        ]
+      ],
+      "top2_acc": 0.925
+    }
+  }
+}

@@ -1,0 +1,33 @@
+// refuter-1 配對題（zh），合成資料，標準答案於跑模型前寫定
+{"id": "p01", "type": "noul", "state": "我不是要退款，只是想換一個顏色一樣的新品。", "instructions": "顧客是否要求退款？", "expected": false}
+{"id": "p02", "type": "noul", "state": "真棒，付了全額買到一台開不了機的吸塵器。你們應該不打算把錢還我吧？", "instructions": "顧客是否要求退款？", "expected": true}
+{"id": "p03", "type": "noul", "state": "訂的月子餐今天又送錯，已經第三次了，我要客訴，請主管回電。", "instructions": "這則訊息是否為投訴？", "expected": true}
+{"id": "p04", "type": "noul", "state": "上次那位清潔阿姨很細心，下次可以再指定她嗎？", "instructions": "這則訊息是否為投訴？", "expected": false}
+{"id": "p05", "type": "noul", "state": "交通部宣布明年起高鐵票價調漲3%，南港至左營單程票將調整為1530元。", "instructions": "這則新聞是否與台灣相關？", "expected": true}
+{"id": "p06", "type": "noul", "state": "國家發改委今日表示，將在粵港澳大灣區新增三條城際鐵路。", "instructions": "這則新聞是否為中國大陸的新聞？", "expected": true}
+{"id": "p07", "type": "noul", "state": "日本氣象廳發布大雨特報，九州地區預計累積雨量達400毫米。", "instructions": "這則新聞是否與台灣相關？", "expected": false}
+{"id": "p08", "type": "noul", "state": "想賺快錢嗎？加我賴 abc123，保證月入十萬，只要先付保證金。", "instructions": "這段內容是否可能為詐騙？", "expected": true}
+{"id": "p09", "type": "noul", "state": "本店週年慶全館八折，活動至10月31日止，詳情請洽門市。", "instructions": "這段內容是否可能為詐騙？", "expected": false}
+{"id": "p10", "type": "noul", "state": "阿美這週已經連續排了六天班，依公司規定每七天至少要休一天。主管想把週日也排給她，讓她連續上七天。", "instructions": "照主管的排法，是否違反公司規定？", "expected": true}
+{"id": "p11", "type": "noul", "state": "我沒有說不要退款喔，請照原本流程退給我。", "instructions": "顧客是否要求退款？", "expected": true}
+{"id": "p12", "type": "noul", "state": "這個 order 的 invoice 開錯了，可以 reissue 一張嗎？amount 不用改。", "instructions": "顧客是否要求退款？", "expected": false}
+{"id": "p13", "type": "noul", "state": "傻眼，等了兩小時師傅才來，來了還說零件沒帶，這樣也要收車馬費？", "instructions": "這則訊息是否為投訴？", "expected": true}
+{"id": "p14", "type": "noul", "state": "美國國務院批准對台軍售，總額約20億美元。", "instructions": "這則新聞是否與台灣相關？", "expected": true}
+{"id": "p15", "type": "noul", "state": "陸委會表示，將持續關注中國大陸對台灣農產品的進口限制。", "instructions": "這則新聞的發布者是否為中國大陸的政府或機構？", "expected": false}
+{"id": "p16", "type": "noul", "state": "寶寶出生第三天，黃疸指數15，小兒科醫師說先照光觀察，不用住院。", "instructions": "醫師是否要求寶寶住院？", "expected": false}
+{"id": "p17", "type": "choice", "state": "密碼重設信一直收不到，垃圾信件匣也沒有。", "instructions": "這張工單應該交給哪個團隊？", "expected": "account", "criteria": {"billing": "付款、發票、退款", "technical": "錯誤、當機、故障", "sales": "價格、升級、新購", "account": "登入、密碼、帳號存取"}}
+{"id": "p18", "type": "choice", "state": "幫我查一下明天下午三點以後我還有沒有空檔。", "instructions": "應該呼叫哪個工具？", "expected": "calendar", "criteria": {"web_search": "查網路上的即時資訊", "calendar": "查詢或建立行程", "calculator": "數學計算", "send_email": "寄電子郵件"}}
+{"id": "p19", "type": "choice", "state": "台北今天晚上會不會下雨？", "instructions": "應該呼叫哪個工具？", "expected": "web_search", "criteria": {"web_search": "查網路上的即時資訊", "calendar": "查詢或建立行程", "calculator": "數學計算", "send_email": "寄電子郵件"}}
+{"id": "p20", "type": "choice", "state": "這段 Python 在 Windows 上會報 UnicodeDecodeError，幫我改好。", "instructions": "應該交給哪個模型？", "expected": "coder", "criteria": {"small_fast": "簡單分類、短回覆", "coder": "撰寫或修改程式碼", "reasoning": "多步驟推理、規劃、數學證明", "vision": "看圖片"}}
+{"id": "p21", "type": "choice", "state": "幫我看這張發票照片上的統編是多少。", "instructions": "應該交給哪個模型？", "expected": "vision", "criteria": {"small_fast": "簡單分類、短回覆", "coder": "撰寫或修改程式碼", "reasoning": "多步驟推理、規劃、數學證明", "vision": "看圖片"}}
+{"id": "p22", "type": "choice", "state": "收到的嬰兒推車輪子歪的，可以寄一台新的給我嗎？不用退錢。", "instructions": "這則客服訊息屬於哪一類？", "expected": "exchange", "criteria": {"refund": "要求退款", "exchange": "要求換貨", "inquiry": "一般詢問", "complaint": "對服務或人員的抱怨，不要求金錢補償"}}
+{"id": "p23", "type": "choice", "state": "你們客服人員態度超差，講話很不耐煩，我只是想反映一下。", "instructions": "這則客服訊息屬於哪一類？", "expected": "complaint", "criteria": {"refund": "要求退款", "exchange": "要求換貨", "inquiry": "一般詢問", "complaint": "對服務或人員的抱怨，不要求金錢補償"}}
+{"id": "p24", "type": "choice", "state": "港府宣布明年起調整公屋租金。", "instructions": "這則新聞屬於哪個地區？", "expected": "hongkong", "criteria": {"taiwan": "主要事件發生在台灣", "china": "主要事件發生在中國大陸", "hongkong": "主要事件發生在香港", "other": "其他地區"}}
+{"id": "p25", "type": "choice", "state": "新北市政府宣布淡江大橋將於年底通車。", "instructions": "這則新聞屬於哪個地區？", "expected": "taiwan", "criteria": {"taiwan": "主要事件發生在台灣", "china": "主要事件發生在中國大陸", "hongkong": "主要事件發生在香港", "other": "其他地區"}}
+{"id": "p26", "type": "choice", "state": "302房的熱水壺壞了，毛巾也不夠。", "instructions": "這件事應該交給哪個部門？", "expected": "housekeeping", "criteria": {"nursing": "護理師：新生兒與產婦照護", "kitchen": "廚房：月子餐", "housekeeping": "房務：清潔與備品", "front_desk": "櫃台：訪客、帳務、預約"}}
+{"id": "p27", "type": "score", "state": "第三次了！！！你們到底有沒有在做事？再不處理我就去找消保官！", "instructions": "顧客有多生氣？", "expected": 2, "criteria": ["平靜", "不滿", "暴怒"]}
+{"id": "p28", "type": "score", "state": "東西收到了，只是包裝有點壓到，下次注意一下就好。", "instructions": "顧客有多生氣？", "expected": 1, "criteria": ["平靜", "不滿", "暴怒"]}
+{"id": "p29", "type": "score", "state": "寶寶今天體溫38.9度，一直哭，喝奶量只剩平常的一半。", "instructions": "這份新生兒紀錄的風險等級？", "expected": 2, "criteria": ["無風險", "低風險", "高風險"]}
+{"id": "p30", "type": "score", "state": "寶寶今天喝奶正常，體溫36.8度，睡得很好。", "instructions": "這份新生兒紀錄的風險等級？", "expected": 0, "criteria": ["無風險", "低風險", "高風險"]}
+{"id": "p31", "type": "score", "state": "302房產婦說傷口突然大量出血。", "instructions": "這件事有多急？", "expected": 2, "criteria": ["可以等", "今天內", "立刻"]}
+{"id": "p32", "type": "score", "state": "請幫我把下週二的清潔改到週四，謝謝。", "instructions": "這件事有多急？", "expected": 0, "criteria": ["可以等", "今天內", "立刻"]}

@@ -1,0 +1,11 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.DS_Store
+/raw/
+/local-data/
+/local-results/
+/jev-cli/config.json
+*.raw.jsonl
+*.partial.jsonl
+*.log

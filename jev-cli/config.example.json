@@ -1,0 +1,11 @@
+{
+  "model": "crh225/plumb-4b",
+  "model_digest": "368717f114a9",
+  "endpoints": [
+    {
+      "name": "local",
+      "url": "http://127.0.0.1:11434",
+      "autostart": false
+    }
+  ]
+}

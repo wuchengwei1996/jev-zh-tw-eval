@@ -1,0 +1,53 @@
+// refuter-2 第二輪困難題（52 題）：標準答案在跑模型前寫定。合成資料。
+{"id": "h01", "type": "noul", "state": "真是謝謝你們喔，讓我在坐月子的時候體驗到什麼叫做被放生。", "instructions": "這則訊息是否在抱怨（對產品或服務表達不滿）？", "expected": true, "tags": "sarcasm"}
+{"id": "h02", "type": "noul", "state": "哇～一晚八千的房間，冷氣居然是裝飾用的，真的是大開眼界呢。", "instructions": "這則訊息是否在抱怨（對產品或服務表達不滿）？", "expected": true, "tags": "sarcasm"}
+{"id": "h03", "type": "noul", "state": "你們的客服效率真的很「驚人」，三天了還在處理中。", "instructions": "這則訊息是否在抱怨（對產品或服務表達不滿）？", "expected": true, "tags": "sarcasm"}
+{"id": "h04", "type": "noul", "state": "傻眼貓咪，寄來的尺寸整個不對。", "instructions": "這則訊息是否在抱怨（對產品或服務表達不滿）？", "expected": true, "tags": "slang"}
+{"id": "h05", "type": "noul", "state": "你們客服真的很雷耶。", "instructions": "這則訊息是否在抱怨（對產品或服務表達不滿）？", "expected": true, "tags": "slang"}
+{"id": "h06", "type": "noul", "state": "這間月子中心真的很頂，推爆！", "instructions": "這則訊息是否在抱怨（對產品或服務表達不滿）？", "expected": false, "tags": "slang"}
+{"id": "h07", "type": "noul", "state": "這個價格真的佛心，CP 值超高。", "instructions": "這則訊息是否在抱怨（對產品或服務表達不滿）？", "expected": false, "tags": "slang"}
+{"id": "h08", "type": "noul", "state": "餐點好吃到我老公每天都來蹭飯，害他胖了三公斤，你們要負責喔哈哈。", "instructions": "這則訊息是否在抱怨（對產品或服務表達不滿）？", "expected": false, "tags": "slang,joke"}
+{"id": "h09", "type": "noul", "state": "是在哈囉？說好今天到貨，結果連出貨通知都沒有。", "instructions": "這則訊息是否在抱怨（對產品或服務表達不滿）？", "expected": true, "tags": "slang"}
+{"id": "h10", "type": "noul", "state": "5 星好評是給護理師們的，餐點的部分就不予置評了 🙂", "instructions": "這則訊息是否在抱怨（對產品或服務表達不滿）？", "expected": true, "tags": "sarcasm,implicit"}
+{"id": "h11", "type": "noul", "state": "原本想申請退款，後來想想算了，東西我留著自己用。", "instructions": "顧客是否要求退款（要店家把錢還給他）？", "expected": false, "tags": "retract"}
+{"id": "h12", "type": "noul", "state": "我朋友說她之前在你們那邊要求退費被拒絕，所以我想先問清楚你們的入住規定。", "instructions": "顧客是否要求退款（要店家把錢還給他）？", "expected": false, "tags": "quote"}
+{"id": "h13", "type": "noul", "state": {"customer_msg": "好的，謝謝你們。", "previous_agent_reply": "您好，您的退款申請我們已經受理，約 7 個工作天入帳。"}, "instructions": "`customer_msg` 這則訊息中，顧客是否在要求退款？", "expected": false, "tags": "multifield"}
+{"id": "h14", "type": "noul", "state": "客服：您好，如果不滿意我們可以幫您辦理退款喔。\n顧客：不用不用，幫我換一件 M 號的就好。\n客服：好的沒問題。", "instructions": "在這段對話中，顧客是否要求退款？", "expected": false, "tags": "dialogue"}
+{"id": "h15", "type": "noul", "state": "客服：請問換貨可以嗎？\n顧客：不要換了，已經等太久了。\n客服：了解，那請問您希望怎麼處理呢？\n顧客：錢還我就好。", "instructions": "在這段對話中，顧客是否要求退款？", "expected": true, "tags": "dialogue"}
+{"id": "h16", "type": "noul", "state": "訂金五千塊可以轉成之後的產後按摩課程費用嗎？我不想拿回現金，只是不想浪費掉。", "instructions": "顧客是否要求退款（要店家把錢還給他）？", "expected": false, "tags": "negation,hard"}
+{"id": "h17", "type": "noul", "state": "住不到一週寶寶就轉院了，剩下的 21 天費用，依合約應該要退給我們吧？", "instructions": "顧客是否要求退款（要店家把錢還給他）？", "expected": true, "tags": "implicit"}
+{"id": "h18", "type": "noul", "state": "Item arrived damaged 😡 我不要 replacement，just give me my money back。", "instructions": "顧客是否要求退款（要店家把錢還給他）？", "expected": true, "tags": "mixed"}
+{"id": "h19", "type": "noul", "state": "0200 巡房：807 房媽媽說頭很痛、看東西模糊，量血壓 162/105。", "instructions": "這則交班紀錄中，是否有需要立即通報護理長的狀況？", "expected": true, "tags": "clinical"}
+{"id": "h20", "type": "noul", "state": "0100 巡房：808 房寶寶吐奶一次，量不多，已拍嗝，精神佳、活動力好。", "instructions": "這則交班紀錄中，是否有需要立即通報護理長的狀況？", "expected": false, "tags": "clinical"}
+{"id": "h21", "type": "noul", "state": "0500 巡房：809 房寶寶從昨晚 9 點到現在都沒有濕尿布，餵奶意願差。", "instructions": "這則交班紀錄中，是否有需要立即通報護理長的狀況？", "expected": true, "tags": "clinical"}
+{"id": "h22", "type": "noul", "state": "0400 巡房：810 房寶寶體溫 37.2 度，睡眠安穩。", "instructions": "這則交班紀錄中，是否有需要立即通報護理長的狀況？", "expected": false, "tags": "clinical"}
+{"id": "h23", "type": "noul", "state": "【清潔組 LINE 群組】\n阿珠：明天 A 棟 301–310 我負責喔\n小芳：好～我做 B 棟\n組長：記得 305 是 VIP 房，備品要多放一份\n阿珠：收到\n小芳：對了 B 棟 2 樓的吸塵器好像壞了\n組長：我明天請廠商來看\n阿美：各位抱歉，我兒子發燒住院，明天跟後天都沒辦法去，請組長幫忙找人代班🙏\n小芳：阿美加油！\n組長：了解，你先照顧小孩\n阿珠：早點休息喔", "instructions": "這段群組對話中，是否有人表示明天無法上班？", "expected": true, "tags": "long,chat"}
+{"id": "h24", "type": "noul", "state": "【清潔組 LINE 群組】\n阿珠：明天 A 棟 301–310 我負責喔\n小芳：好～我做 B 棟\n組長：記得 305 是 VIP 房，備品要多放一份\n阿珠：收到\n小芳：對了 B 棟 2 樓的吸塵器好像壞了\n組長：我明天請廠商來看\n阿美：我明天也可以，原本說要請假的事取消了，照常上班喔\n小芳：讚\n組長：好，那就照原本班表\n阿珠：早點休息喔", "instructions": "這段群組對話中，是否有人表示明天無法上班？", "expected": false, "tags": "long,chat,retract"}
+{"id": "h25", "type": "noul", "state": "小芳說她週六可以來支援，不過只能做到中午 12 點，下午要去接小孩。", "instructions": "小芳週六是否可以排全天班？", "expected": false, "tags": "op"}
+{"id": "h26", "type": "noul", "state": "國巨宣布以新台幣 200 億元收購一家美國被動元件廠。", "instructions": "這則新聞的內容是否直接涉及台灣（台灣的人、地點、機構、企業或政府）？", "expected": true, "tags": "news,tw,entity"}
+{"id": "h27", "type": "noul", "state": "長榮航空宣布明年新增布拉格航線，每週三班。", "instructions": "這則新聞的內容是否直接涉及台灣（台灣的人、地點、機構、企業或政府）？", "expected": true, "tags": "news,tw,entity"}
+{"id": "h28", "type": "noul", "state": "苗栗縣政府宣布明年起調高新生兒育兒津貼。", "instructions": "這則新聞的內容是否直接涉及台灣（台灣的人、地點、機構、企業或政府）？", "expected": true, "tags": "news,tw,place"}
+{"id": "h29", "type": "noul", "state": "陸委會今日召開記者會，回應中國海警船進入金門限制水域一事。", "instructions": "這則新聞的主要事件是否發生在中國大陸（不含台灣、香港、澳門）？", "expected": false, "tags": "news,cn,trap"}
+{"id": "h30", "type": "noul", "state": "新華社報導，習近平今日在北京會見來訪的國民黨副主席。", "instructions": "這則新聞的主要事件是否發生在中國大陸（不含台灣、香港、澳門）？", "expected": true, "tags": "news,cn"}
+{"id": "h31", "type": "noul", "state": "新華社報導，習近平今日在北京會見來訪的國民黨副主席。", "instructions": "這則新聞的內容是否直接涉及台灣（台灣的人、地點、機構、企業或政府）？", "expected": true, "tags": "news,tw"}
+{"id": "h32", "type": "noul", "state": "竹科管理局公布上半年園區營業額創歷史新高。", "instructions": "這則新聞的內容是否直接涉及台灣（台灣的人、地點、機構、企業或政府）？", "expected": true, "tags": "news,tw,entity"}
+{"id": "h33", "type": "noul", "state": "福建省政府宣布擴大對廈門自貿區台資企業的稅收優惠。", "instructions": "這則新聞的主要事件是否發生在中國大陸（不含台灣、香港、澳門）？", "expected": true, "tags": "news,cn"}
+{"id": "h34", "type": "noul", "state": "Bloomberg：Alibaba to cut 10% of staff at its Hangzhou headquarters amid restructuring.", "instructions": "這則新聞的主要事件是否發生在中國大陸（不含台灣、香港、澳門）？", "expected": true, "tags": "news,cn,mixed"}
+{"id": "h35", "type": "noul", "state": "韓國總統府今日宣布內閣改組，共更換五名部長。", "instructions": "這則新聞的內容是否直接涉及台灣（台灣的人、地點、機構、企業或政府）？", "expected": false, "tags": "news,tw"}
+{"id": "h36", "type": "noul", "state": {"today": "2026-10-03", "news": "（民國 115 年 9 月 20 日）勞動部公布明年基本工資調整方案。"}, "instructions": "以 `today` 為準，這則新聞的發布日期是否已經超過 7 天？", "expected": true, "tags": "news,expired,roc"}
+{"id": "h37", "type": "noul", "state": {"today": "2026-10-03", "news": "（民國 115 年 10 月 1 日）衛福部宣布擴大產後護理補助。"}, "instructions": "以 `today` 為準，這則新聞的發布日期是否已經超過 7 天？", "expected": false, "tags": "news,expired,roc"}
+{"id": "h38", "type": "noul", "state": "這個寶寶好可愛，好想把他吃掉～", "instructions": "這則訊息是否含有威脅他人人身安全的內容？", "expected": false, "tags": "risk,idiom"}
+{"id": "h39", "type": "noul", "state": "再不改善，我就去消保官檢舉你們。", "instructions": "這則訊息是否含有威脅他人人身安全的內容？", "expected": false, "tags": "risk,trap"}
+{"id": "h40", "type": "noul", "state": "笑到往生，你們這個廣告也太好笑。", "instructions": "這則訊息是否含有威脅他人人身安全的內容？", "expected": false, "tags": "risk,idiom"}
+{"id": "h41", "type": "noul", "state": "我知道你住哪裡，也知道你小孩讀哪間國小，自己小心一點。", "instructions": "這則訊息是否含有威脅他人人身安全的內容？", "expected": true, "tags": "risk,implicit"}
+{"id": "h42", "type": "noul", "state": "那些阿六仔素質就是差，不要讓他們入住。", "instructions": "這則留言是否含有歧視或仇恨言論？", "expected": true, "tags": "risk,slang"}
+{"id": "h43", "type": "noul", "state": "您好，我是國泰世華銀行客服，您的信用卡疑似遭盜刷，請提供卡號與背面末三碼以便我們立即凍結。", "instructions": "這則訊息是否疑似詐騙？", "expected": true, "tags": "risk"}
+{"id": "h44", "type": "noul", "state": "【中華電信】您本月帳單金額 699 元，已自動扣繳成功，感謝您的使用。", "instructions": "這則訊息是否疑似詐騙？", "expected": false, "tags": "risk,trap"}
+{"id": "h45", "type": "noul", "state": "媽，我手機掉了，這是我新的 LINE，先幫我匯 3 萬到這個帳戶，急用，晚點再跟你說。", "instructions": "這則訊息是否疑似詐騙？", "expected": true, "tags": "risk"}
+{"id": "h46", "type": "choice", "state": "先不要寄信，幫我上網查一下對方公司的地址就好。", "instructions": "agent 應該呼叫哪個工具？", "criteria": {"web_search": "上網查即時或外部資訊", "calculator": "數學計算", "file_read": "讀取本機檔案內容", "send_email": "寄出電子郵件", "calendar": "建立或查詢行事曆事件"}, "expected": "web_search", "tags": "tool,negation"}
+{"id": "h47", "type": "choice", "state": "不用算了，直接上網找今年的基本工資是多少。", "instructions": "agent 應該呼叫哪個工具？", "criteria": {"web_search": "上網查即時或外部資訊", "calculator": "數學計算", "file_read": "讀取本機檔案內容", "send_email": "寄出電子郵件", "calendar": "建立或查詢行事曆事件"}, "expected": "web_search", "tags": "tool,negation"}
+{"id": "h48", "type": "choice", "state": "提醒我明天早上九點打電話給婆婆。", "instructions": "agent 應該呼叫哪個工具？", "criteria": {"web_search": "上網查即時或外部資訊", "calculator": "數學計算", "file_read": "讀取本機檔案內容", "send_email": "寄出電子郵件", "calendar": "建立或查詢行事曆事件"}, "expected": "calendar", "tags": "tool"}
+{"id": "h49", "type": "choice", "state": "打開剛剛下載的 會議紀錄.docx，看看老闆有沒有說要寄信給客戶。", "instructions": "agent 應該呼叫哪個工具？", "criteria": {"web_search": "上網查即時或外部資訊", "calculator": "數學計算", "file_read": "讀取本機檔案內容", "send_email": "寄出電子郵件", "calendar": "建立或查詢行事曆事件"}, "expected": "file_read", "tags": "tool,trap"}
+{"id": "h50", "type": "choice", "state": "台北到高雄搭高鐵最快要多久？", "instructions": "agent 應該呼叫哪個工具？", "criteria": {"web_search": "上網查即時或外部資訊", "calculator": "數學計算", "file_read": "讀取本機檔案內容", "send_email": "寄出電子郵件", "calendar": "建立或查詢行事曆事件"}, "expected": "web_search", "tags": "tool"}
+{"id": "h51", "type": "score", "state": "907 房的煙霧偵測器一直在叫，走廊有焦味。", "instructions": "這件事的急迫程度？", "criteria": ["不急", "本週內", "今天", "立刻"], "expected": 3, "tags": "score,op"}
+{"id": "h52", "type": "score", "state": "下禮拜三的家屬說明會，記得準備投影機。", "instructions": "這件事的急迫程度？", "criteria": ["不急", "本週內", "今天", "立刻"], "expected": 1, "tags": "score,op"}
